@@ -40,10 +40,68 @@
 
     <main class="dashboard-page">
 
+        <section class="welcome-section">
+            <h2>Welcome back!</h2>
+            <p>Here's what's happening in your CRM today.</p>
+
+            <div id="live-clock">
+                --:--:--
+            </div>
+        </section>
+
+        <section class="stats-section">
+
+            <article class="stat-card">
+                <h3>Total Clients</h3>
+                <p id="total-clients">0</p>
+            </article>
+
+            <article class="stat-card">
+                <h3>Active Deals</h3>
+                <p id="active-deals">0</p>
+            </article>
+
+            <article class="stat-card">
+                <h3>Won Revenue</h3>
+                <p id="won-revenue">$0</p>
+            </article>
+
+            <article class="stat-card">
+                <h3>New This Week</h3>
+                <p id="new-this-week">0</p>
+            </article>
+
+        </section>
+
+        <section class="pipeline-overview">
+            <h2>Pipeline Overview</h2>
+
+            <div id="pipeline-chart">
+
+            </div>
+        </section>
+
+        <section class="recent-clients">
+            <div class="section-heading">
+                <h2>Recent Clients</h2>
+
+                <a href="clients.html">
+                    View all clients →
+                </a>
+            </div>
+
+            <div id="recent-clients-list">
+
+            </div>
+        </section>
+
     </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script src="js/guard.js"></script>
     <script src="js/common.js"></script>
+    <script src="js/data.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 
