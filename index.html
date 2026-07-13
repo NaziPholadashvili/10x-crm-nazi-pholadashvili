@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -24,8 +23,6 @@
 
                     <input type="email" id="login-email" name="email" placeholder="Enter your email"
                         autocomplete="email">
-
-                    <p class="field-error" id="login-email-error"></p>
                 </div>
 
                 <div class="form-group">
@@ -33,27 +30,26 @@
 
                     <input type="password" id="login-password" name="password" placeholder="Enter your password"
                         autocomplete="current-password">
-
-                    <p class="field-error" id="login-password-error"></p>
                 </div>
 
-                <p class="form-error" id="login-form-error"></p>
+                <button type="submit">
+                    Log In
+                </button>
 
-                <button type="submit">Log In</button>
             </form>
 
             <p class="auth-link">
                 Don't have an account?
                 <a href="signup.html">Sign up</a>
             </p>
+
         </section>
     </main>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script src="js/guard.js"></script>
     <script src="js/common.js"></script>
     <script src="js/login.js"></script>
+
 </body>
 
 </html>
