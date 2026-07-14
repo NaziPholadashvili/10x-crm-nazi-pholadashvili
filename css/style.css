@@ -398,3 +398,164 @@ textarea {
 
     margin-bottom: 20px;
 }
+
+/* DASHBOARD PAGE */
+
+.welcome-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+    padding: 24px;
+
+    background-color: var(--surface-color);
+
+    border-radius: var(--border-radius);
+
+    box-shadow:
+        0 8px 20px var(--shadow-color);
+}
+
+.welcome-section h2 {
+    margin-bottom: 8px;
+}
+
+.welcome-section p {
+    color: var(--muted-text-color);
+}
+
+#live-clock {
+    color: var(--primary-color);
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+
+/* DASHBOARD STATISTICS */
+
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    padding: 24px;
+
+    background-color: var(--surface-color);
+
+    border-radius: var(--border-radius);
+
+    box-shadow:
+        0 8px 20px var(--shadow-color);
+}
+
+.stat-card h3 {
+    margin-bottom: 10px;
+
+    color: var(--muted-text-color);
+
+    font-size: 16px;
+}
+
+.stat-card p {
+    color: var(--primary-color);
+
+    font-size: 30px;
+    font-weight: 700;
+}
+
+
+/* PIPELINE OVERVIEW */
+
+.pipeline-overview {
+    margin-bottom: 30px;
+    padding: 24px;
+
+    background-color: var(--surface-color);
+
+    border-radius: var(--border-radius);
+
+    box-shadow:
+        0 8px 20px var(--shadow-color);
+}
+
+.pipeline-overview h2 {
+    margin-bottom: 20px;
+}
+
+.pipeline-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 16px;
+}
+
+.pipeline-item {
+    padding: 18px;
+
+    background-color: var(--surface-light-color);
+
+    border-radius: 10px;
+
+    text-align: center;
+}
+
+.pipeline-item h3 {
+    margin-bottom: 8px;
+
+    color: var(--muted-text-color);
+
+    font-size: 15px;
+}
+
+.pipeline-item p {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+/* RECENT CLIENTS */
+
+.recent-clients {
+    padding: 24px;
+
+    background-color: var(--surface-color);
+
+    border-radius: var(--border-radius);
+
+    box-shadow:
+        0 8px 20px var(--shadow-color);
+}
+
+.recent-clients h2 {
+    margin-bottom: 20px;
+}
+
+#recent-clients-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    margin-bottom: 20px;
+}
+
+.view-all-clients {
+    display: inline-block;
+
+    color: var(--primary-color);
+
+    font-weight: 600;
+}
+
+.view-all-clients:hover {
+    text-decoration: underline;
+}
