@@ -2,16 +2,21 @@
 <html lang="en">
 
 <head>
+
+    <!-- Page Information -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>10X CRM - Clients</title>
 
+    <!-- Global Styles -->
     <link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body>
 
+    <!-- Protected Page Header -->
     <header class="header">
 
         <h1>
@@ -20,8 +25,11 @@
             </a>
         </h1>
 
+        <!-- Main Navigation -->
         <nav aria-label="Main navigation">
+
             <ul>
+
                 <li>
                     <a href="dashboard.html">
                         Dashboard
@@ -39,7 +47,9 @@
                         Profile
                     </a>
                 </li>
+
             </ul>
+
         </nav>
 
         <button type="button" id="theme-toggle">
@@ -52,8 +62,10 @@
 
     </header>
 
+    <!-- Clients Page -->
     <main class="clients-page">
 
+        <!-- Page Heading -->
         <section class="page-heading">
 
             <h2>Clients</h2>
@@ -64,6 +76,7 @@
 
         </section>
 
+        <!-- Clients Toolbar -->
         <section class="clients-toolbar">
 
             <input type="search" id="client-search" placeholder="Search by name or company" aria-label="Search clients">
@@ -110,12 +123,16 @@
 
         </section>
 
+        <!-- Clients List -->
         <section id="clients-list" aria-live="polite">
+
             <p>Loading clients...</p>
+
         </section>
 
     </main>
 
+    <!-- Add Client Modal -->
     <div class="modal hidden" id="add-client-modal" role="dialog" aria-modal="true" aria-labelledby="add-client-title">
 
         <div class="modal-content">
@@ -128,6 +145,7 @@
                 Add Client
             </h2>
 
+            <!-- Add Client Form -->
             <form id="client-form" novalidate>
 
                 <div class="form-group">
@@ -227,6 +245,7 @@
 
     </div>
 
+    <!-- Client Details Modal -->
     <div class="modal hidden" id="client-details-modal" role="dialog" aria-modal="true"
         aria-labelledby="client-details-title">
 
@@ -236,6 +255,7 @@
                 ×
             </button>
 
+            <!-- Client Details -->
             <section class="client-details-header">
 
                 <img id="details-client-image" alt="Client avatar">
@@ -283,6 +303,7 @@
 
             </section>
 
+            <!-- Client Notes -->
             <section class="client-notes-section">
 
                 <h3>Notes</h3>
@@ -313,8 +334,11 @@
 
     </div>
 
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" role="status" aria-live="polite">
+    </div>
 
+    <!-- JavaScript Files -->
     <script src="js/guard.js"></script>
     <script src="js/common.js"></script>
     <script src="js/data.js"></script>

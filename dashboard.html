@@ -2,16 +2,21 @@
 <html lang="en">
 
 <head>
+
+    <!-- Page Information -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>10X CRM - Dashboard</title>
 
+    <!-- Global Styles -->
     <link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body>
 
+    <!-- Protected Page Header -->
     <header class="header">
 
         <h1>
@@ -20,8 +25,11 @@
             </a>
         </h1>
 
+        <!-- Main Navigation -->
         <nav aria-label="Main navigation">
+
             <ul>
+
                 <li>
                     <a href="dashboard.html" class="active">
                         Dashboard
@@ -39,7 +47,9 @@
                         Profile
                     </a>
                 </li>
+
             </ul>
+
         </nav>
 
         <button type="button" id="theme-toggle">
@@ -52,11 +62,14 @@
 
     </header>
 
+    <!-- Dashboard Page -->
     <main class="dashboard-page">
 
+        <!-- Welcome Section -->
         <section class="welcome-section">
 
             <div>
+
                 <h2 id="welcome-message">
                     Welcome back!
                 </h2>
@@ -64,6 +77,7 @@
                 <p>
                     Here's what's happening in your CRM today.
                 </p>
+
             </div>
 
             <div id="live-clock">
@@ -72,30 +86,52 @@
 
         </section>
 
+        <!-- CRM Statistics -->
         <section class="stats-section" aria-label="CRM statistics">
 
             <article class="stat-card">
+
                 <h3>Total Clients</h3>
-                <p id="total-clients">0</p>
+
+                <p id="total-clients">
+                    0
+                </p>
+
             </article>
 
             <article class="stat-card">
+
                 <h3>Active Deals</h3>
-                <p id="active-deals">0</p>
+
+                <p id="active-deals">
+                    0
+                </p>
+
             </article>
 
             <article class="stat-card">
+
                 <h3>Won Revenue</h3>
-                <p id="won-revenue">$0</p>
+
+                <p id="won-revenue">
+                    $0
+                </p>
+
             </article>
 
             <article class="stat-card">
+
                 <h3>New This Week</h3>
-                <p id="new-this-week">0</p>
+
+                <p id="new-this-week">
+                    0
+                </p>
+
             </article>
 
         </section>
 
+        <!-- Pipeline Overview -->
         <section class="pipeline-overview">
 
             <h2>Pipeline Overview</h2>
@@ -103,29 +139,50 @@
             <div class="pipeline-list">
 
                 <article class="pipeline-item">
+
                     <h3>Lead</h3>
-                    <p id="pipeline-lead">0</p>
+
+                    <p id="pipeline-lead">
+                        0
+                    </p>
+
                 </article>
 
                 <article class="pipeline-item">
+
                     <h3>Contacted</h3>
-                    <p id="pipeline-contacted">0</p>
+
+                    <p id="pipeline-contacted">
+                        0
+                    </p>
+
                 </article>
 
                 <article class="pipeline-item">
+
                     <h3>Won</h3>
-                    <p id="pipeline-won">0</p>
+
+                    <p id="pipeline-won">
+                        0
+                    </p>
+
                 </article>
 
                 <article class="pipeline-item">
+
                     <h3>Lost</h3>
-                    <p id="pipeline-lost">0</p>
+
+                    <p id="pipeline-lost">
+                        0
+                    </p>
+
                 </article>
 
             </div>
 
         </section>
 
+        <!-- Recent Clients -->
         <section class="recent-clients">
 
             <h2>Recent Clients</h2>
@@ -140,8 +197,11 @@
 
     </main>
 
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <!-- Toast Notification -->
+    <div class="toast" id="toast" role="status" aria-live="polite">
+    </div>
 
+    <!-- JavaScript Files -->
     <script src="js/guard.js"></script>
     <script src="js/common.js"></script>
     <script src="js/data.js"></script>
