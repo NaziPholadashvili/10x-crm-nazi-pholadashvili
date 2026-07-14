@@ -39,6 +39,7 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.5;
+
     transition:
         background-color 0.3s ease,
         color 0.3s ease;
@@ -60,9 +61,12 @@ button {
     border: none;
     border-radius: 8px;
     padding: 12px 18px;
+
     background-color: var(--primary-color);
     color: #ffffff;
+
     cursor: pointer;
+
     transition:
         background-color 0.2s ease,
         transform 0.2s ease;
@@ -83,9 +87,12 @@ textarea {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 12px;
+
     background-color: var(--surface-color);
     color: var(--text-color);
+
     outline: none;
+
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease;
@@ -119,10 +126,109 @@ textarea {
     font-size: 14px;
 }
 
-.input-error {
+.input-error,
+.input-error:focus {
     border-color: var(--error-color);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
 .hidden {
     display: none;
+}
+
+.auth-page {
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 430px;
+
+    padding: 40px;
+
+    background-color: var(--surface-color);
+    border-radius: var(--border-radius);
+
+    box-shadow: 0 20px 40px var(--shadow-color);
+}
+
+.auth-card h1 {
+    margin-bottom: 30px;
+
+    text-align: center;
+    font-size: 32px;
+}
+
+.auth-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.auth-card button {
+    margin-top: 10px;
+}
+
+.auth-link {
+    margin-top: 24px;
+
+    text-align: center;
+    color: var(--muted-text-color);
+}
+
+.auth-link a {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+
+.toast {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1000;
+
+    min-width: 280px;
+    max-width: 360px;
+
+    padding: 16px 20px;
+
+    background-color: var(--surface-light-color);
+    color: var(--text-color);
+
+    border-radius: 10px;
+
+    box-shadow: 0 12px 30px var(--shadow-color);
+
+    opacity: 0;
+    pointer-events: none;
+
+    transform: translateY(20px);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.toast.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.toast.success {
+    border-left: 5px solid var(--success-color);
+}
+
+.toast.error {
+    border-left: 5px solid var(--error-color);
 }
