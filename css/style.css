@@ -886,3 +886,95 @@ textarea {
 
     font-size: 13px;
 }
+
+/* PROFILE PAGE */
+
+.profile-information {
+    display: flex;
+    align-items: center;
+
+    gap: 24px;
+
+    margin-bottom: 30px;
+    padding: 24px;
+
+    background-color: var(--surface-color);
+
+    border-radius: var(--border-radius);
+
+    box-shadow:
+        0 8px 20px var(--shadow-color);
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background-color: var(--primary-color);
+    color: #ffffff;
+
+    font-size: 32px;
+    font-weight: 700;
+
+    flex-shrink: 0;
+}
+
+.profile-details h2 {
+    margin-bottom: 8px;
+}
+
+.profile-details p {
+    margin-bottom: 6px;
+
+    color: var(--muted-text-color);
+}
+
+.profile-section {
+    margin-bottom: 30px;
+    padding: 24px;
+
+    background-color: var(--surface-color);
+
+    border-radius: var(--border-radius);
+
+    box-shadow:
+        0 8px 20px var(--shadow-color);
+}
+
+.profile-section h2 {
+    margin-bottom: 20px;
+}
+
+.profile-section form {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* DANGER ZONE */
+
+.danger-zone {
+    border: 2px solid var(--error-color);
+}
+
+.danger-zone p {
+    margin-bottom: 20px;
+
+    color: var(--muted-text-color);
+}
+
+#reset-crm-data {
+    background-color: var(--error-color);
+}
+
+#reset-crm-data:hover {
+    background-color: #dc2626;
+}
