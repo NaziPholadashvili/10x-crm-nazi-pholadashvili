@@ -2,6 +2,7 @@
 
 const liveClock = document.querySelector("#live-clock");
 const welcomeMessage = document.querySelector("#welcome-message");
+const totalClientsElement = document.querySelector("#total-clients");
 
 
 /* LIVE CLOCK */
@@ -56,6 +57,28 @@ function displayWelcomeMessage() {
 }
 
 
+/* CLIENTS */
+
+function getClients() {
+    return JSON.parse(
+        localStorage.getItem("crm_clients")
+    ) || [];
+}
+
+
+/* TOTAL CLIENTS */
+
+function displayTotalClients() {
+    if (!totalClientsElement) {
+        return;
+    }
+
+    const clients = getClients();
+
+    totalClientsElement.textContent = clients.length;
+}
+
+
 /* PAGE INITIALIZATION */
 
 updateClock();
@@ -63,3 +86,5 @@ updateClock();
 setInterval(updateClock, 1000);
 
 displayWelcomeMessage();
+
+displayTotalClients();
