@@ -179,6 +179,54 @@ textarea {
 }
 
 
+/* PASSWORD VISIBILITY */
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 55px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+
+    transform: translateY(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: auto;
+    height: auto;
+
+    margin: 0;
+    padding: 0;
+
+    border: none;
+
+    background-color: transparent;
+    color: var(--text-color);
+
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.password-toggle:hover {
+    background-color: transparent;
+}
+
+.password-toggle:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+
 /* UTILITY CLASSES */
 
 .hidden {
@@ -231,6 +279,10 @@ textarea {
     margin-top: 10px;
 }
 
+.auth-card .password-toggle {
+    margin-top: 0;
+}
+
 .auth-link {
     margin-top: 24px;
 
@@ -250,7 +302,7 @@ textarea {
 }
 
 
-/*  TOAST NOTIFICATIONS */
+/* TOAST NOTIFICATIONS */
 
 .toast {
     position: fixed;
@@ -398,6 +450,7 @@ textarea {
 
     margin-bottom: 20px;
 }
+
 
 /* DASHBOARD PAGE */
 
@@ -559,6 +612,7 @@ textarea {
 .view-all-clients:hover {
     text-decoration: underline;
 }
+
 
 /* CLIENTS PAGE */
 
@@ -887,6 +941,7 @@ textarea {
     font-size: 13px;
 }
 
+
 /* PROFILE PAGE */
 
 .profile-information {
@@ -978,6 +1033,7 @@ textarea {
 #reset-crm-data:hover {
     background-color: #dc2626;
 }
+
 
 /* RESPONSIVE DESIGN */
 

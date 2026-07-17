@@ -82,10 +82,49 @@ function logout() {
 }
 
 
+/* PASSWORD VISIBILITY */
+
+function togglePasswordVisibility(event) {
+    const toggleButton = event.currentTarget;
+
+    const targetInputId = toggleButton.dataset.target;
+
+    const passwordInput = document.querySelector(
+        `#${targetInputId}`
+    );
+
+    if (!passwordInput) {
+        return;
+    }
+
+    const isPasswordHidden =
+        passwordInput.type === "password";
+
+    if (isPasswordHidden) {
+        passwordInput.type = "text";
+        toggleButton.textContent = "🙈";
+        toggleButton.setAttribute(
+            "aria-label",
+            "Hide password"
+        );
+    } else {
+        passwordInput.type = "password";
+        toggleButton.textContent = "👁";
+        toggleButton.setAttribute(
+            "aria-label",
+            "Show password"
+        );
+    }
+}
+
+
 /* EVENT LISTENERS */
 
 const themeToggleButton = document.querySelector("#theme-toggle");
 const logoutButton = document.querySelector("#logout-button");
+
+const passwordToggleButtons =
+    document.querySelectorAll(".password-toggle");
 
 if (themeToggleButton) {
     themeToggleButton.addEventListener("click", toggleTheme);
@@ -94,6 +133,13 @@ if (themeToggleButton) {
 if (logoutButton) {
     logoutButton.addEventListener("click", logout);
 }
+
+passwordToggleButtons.forEach((button) => {
+    button.addEventListener(
+        "click",
+        togglePasswordVisibility
+    );
+});
 
 
 /* PAGE INITIALIZATION */

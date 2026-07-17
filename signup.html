@@ -68,8 +68,16 @@
                         Password
                     </label>
 
-                    <input type="password" id="password" name="password" placeholder="Enter your password"
-                        autocomplete="new-password">
+                    <div class="password-wrapper">
+
+                        <input type="password" id="password" name="password" placeholder="Enter your password"
+                            autocomplete="new-password">
+
+                        <button type="button" class="password-toggle" data-target="password" aria-label="Show password">
+                            👁
+                        </button>
+
+                    </div>
 
                     <p class="field-error" id="password-error"></p>
 
@@ -81,8 +89,17 @@
                         Confirm Password
                     </label>
 
-                    <input type="password" id="confirm-password" name="confirmPassword"
-                        placeholder="Confirm your password" autocomplete="new-password">
+                    <div class="password-wrapper">
+
+                        <input type="password" id="confirm-password" name="confirmPassword"
+                            placeholder="Confirm your password" autocomplete="new-password">
+
+                        <button type="button" class="password-toggle" data-target="confirm-password"
+                            aria-label="Show password">
+                            👁
+                        </button>
+
+                    </div>
 
                     <p class="field-error" id="confirm-password-error"></p>
 
