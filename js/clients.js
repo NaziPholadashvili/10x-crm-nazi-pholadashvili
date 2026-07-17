@@ -80,6 +80,5 @@ addClientModal.addEventListener("click", (event) => {
 
 clientForm.addEventListener(
     "input",
-    stopAutoClose,
-    { once: true }
+    stopAutoClose
 );
