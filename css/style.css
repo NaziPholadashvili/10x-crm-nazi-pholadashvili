@@ -22,8 +22,7 @@
 }
 
 
-/* LIGHT THEME
-   Applied when body has .light-theme */
+/* LIGHT THEME */
 
 body.light-theme {
     --background-color: #f1f5f9;
@@ -71,9 +70,6 @@ a {
     text-decoration: none;
 }
 
-
-/* COMMON FORM FONT */
-
 button,
 input,
 select,
@@ -85,10 +81,10 @@ textarea {
 /* COMMON BUTTON STYLES */
 
 button {
+    padding: 12px 18px;
+
     border: none;
     border-radius: 8px;
-
-    padding: 12px 18px;
 
     background-color: var(--primary-color);
     color: #ffffff;
@@ -116,10 +112,10 @@ select,
 textarea {
     width: 100%;
 
+    padding: 12px;
+
     border: 1px solid var(--border-color);
     border-radius: 8px;
-
-    padding: 12px;
 
     background-color: var(--surface-color);
     color: var(--text-color);
@@ -159,7 +155,7 @@ textarea {
 }
 
 
-/* VALIDATION ERRORS */
+/* VALIDATION */
 
 .field-error,
 .form-error {
@@ -186,23 +182,21 @@ textarea {
 }
 
 .password-wrapper input {
-    width: 100%;
     padding-right: 55px;
 }
 
 .password-toggle {
     position: absolute;
+
     top: 50%;
     right: 16px;
 
-    transform: translateY(-50%);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     width: auto;
     height: auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
     margin: 0;
     padding: 0;
@@ -215,7 +209,7 @@ textarea {
     font-size: 20px;
     line-height: 1;
 
-    cursor: pointer;
+    transform: translateY(-50%);
 }
 
 .password-toggle:hover {
@@ -223,18 +217,19 @@ textarea {
 }
 
 .password-toggle:active {
-    transform: translateY(-50%) scale(0.95);
+    transform:
+        translateY(-50%) scale(0.95);
 }
 
 
-/* UTILITY CLASSES */
+/* UTILITY */
 
 .hidden {
     display: none !important;
 }
 
 
-/* LOGIN AND SIGNUP PAGES */
+/* AUTH PAGES */
 
 .auth-page {
     min-height: 100vh;
@@ -275,12 +270,8 @@ textarea {
     gap: 20px;
 }
 
-.auth-card button {
+.auth-card form>button {
     margin-top: 10px;
-}
-
-.auth-card .password-toggle {
-    margin-top: 0;
 }
 
 .auth-link {
@@ -302,7 +293,7 @@ textarea {
 }
 
 
-/* TOAST NOTIFICATIONS */
+/* TOAST */
 
 .toast {
     position: fixed;
@@ -353,7 +344,7 @@ textarea {
 }
 
 
-/* PROTECTED PAGE HEADER */
+/* HEADER */
 
 .header {
     display: flex;
@@ -370,12 +361,10 @@ textarea {
 }
 
 .logo {
-    display: inline-block;
-
     color: var(--primary-color);
 
     font-size: 28px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .header nav {
@@ -417,7 +406,7 @@ textarea {
 }
 
 
-/* PROTECTED PAGE MAIN LAYOUT */
+/* MAIN PAGE LAYOUT */
 
 .dashboard-page,
 .clients-page,
@@ -425,34 +414,25 @@ textarea {
     padding: 40px;
 }
 
-
-/* COMMON PAGE HEADING */
-
-.page-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 20px;
-
-    margin-bottom: 30px;
-}
-
-
-/* COMMON SECTION HEADING */
-
+.page-heading,
 .section-heading {
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     gap: 20px;
+}
 
+.page-heading {
+    margin-bottom: 30px;
+}
+
+.section-heading {
     margin-bottom: 20px;
 }
 
 
-/* DASHBOARD PAGE */
+/* DASHBOARD WELCOME */
 
 .welcome-section {
     display: flex;
@@ -492,7 +472,7 @@ textarea {
 
 .stats-section {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 
     gap: 20px;
 
@@ -546,7 +526,7 @@ textarea {
 
 .pipeline-list {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 
     gap: 16px;
 }
@@ -574,10 +554,10 @@ textarea {
     font-weight: 700;
 }
 
-
 /* RECENT CLIENTS */
 
 .recent-clients {
+    margin-bottom: 30px;
     padding: 24px;
 
     background-color: var(--surface-color);
@@ -589,16 +569,100 @@ textarea {
 }
 
 .recent-clients h2 {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 #recent-clients-list {
     display: flex;
     flex-direction: column;
 
-    gap: 12px;
+    gap: 16px;
 
-    margin-bottom: 20px;
+    margin-bottom: 22px;
+}
+
+
+/* RECENT CLIENT CARD */
+
+.recent-client-card {
+    display: grid;
+    grid-template-columns:
+        minmax(140px, 1fr) minmax(180px, 1fr) 100px 110px;
+
+    align-items: center;
+
+    gap: 24px;
+
+    min-height: 100px;
+
+    padding: 22px 24px;
+
+    background-color: var(--surface-light-color);
+
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.recent-client-card:hover {
+    border-color: var(--primary-color);
+
+    transform: translateY(-2px);
+}
+
+.recent-client-name {
+    margin: 0;
+
+    color: var(--text-color);
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.recent-client-company {
+    margin: 0;
+
+    color: var(--muted-text-color);
+
+    text-align: center;
+
+    font-size: 15px;
+}
+
+.recent-client-value {
+    justify-self: center;
+
+    color: var(--text-color);
+
+    font-size: 18px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.recent-client-status {
+    justify-self: end;
+
+    min-width: 90px;
+
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 7px 14px;
+
+    background-color: rgba(99, 102, 241, 0.24);
+    color: #818cf8;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-transform: capitalize;
 }
 
 .view-all-clients {
@@ -614,11 +678,68 @@ textarea {
 }
 
 
-/* CLIENTS PAGE */
+/* QUICK ACTIONS */
+
+.quick-actions {
+    margin-bottom: 30px;
+    padding: 24px;
+
+    background-color: var(--surface-color);
+
+    border-radius: var(--border-radius);
+
+    box-shadow:
+        0 8px 20px var(--shadow-color);
+}
+
+.quick-actions h2 {
+    margin-bottom: 20px;
+}
+
+.quick-actions-buttons {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+.quick-action-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
+    background-color: var(--primary-color);
+    color: #ffffff;
+
+    font-weight: 600;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.quick-action-button:hover {
+    background-color: var(--primary-hover-color);
+
+    transform: translateY(-2px);
+}
+
+#export-clients-button {
+    width: auto;
+
+    padding: 10px 16px;
+}
+
+
+/* CLIENTS TOOLBAR */
 
 .clients-toolbar {
     display: grid;
-    grid-template-columns: 1.5fr auto auto;
+    grid-template-columns: minmax(220px, 1.5fr) auto auto;
     align-items: center;
 
     gap: 16px;
@@ -662,6 +783,9 @@ textarea {
     min-width: 190px;
 }
 
+
+/* CLIENTS LIST */
+
 #clients-list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -670,7 +794,7 @@ textarea {
 }
 
 
-/* CLIENT CARDS */
+/* CLIENT CARD */
 
 .client-card {
     padding: 20px;
@@ -682,8 +806,6 @@ textarea {
 
     box-shadow:
         0 8px 20px var(--shadow-color);
-
-    cursor: pointer;
 
     transition:
         transform 0.2s ease,
@@ -705,10 +827,12 @@ textarea {
     margin-bottom: 16px;
 }
 
-.client-card img,
-.client-avatar {
+.client-avatar,
+.client-card img {
     width: 54px;
     height: 54px;
+
+    flex-shrink: 0;
 
     border-radius: 50%;
 
@@ -722,14 +846,19 @@ textarea {
 }
 
 .client-card-company,
-.client-card-email {
+.client-card-email,
+.client-card-phone {
     color: var(--muted-text-color);
 }
 
 .client-card-email {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
 
     overflow-wrap: anywhere;
+}
+
+.client-card-phone {
+    margin-bottom: 16px;
 }
 
 .client-card-footer {
@@ -738,6 +867,8 @@ textarea {
     align-items: center;
 
     gap: 12px;
+
+    margin-top: 16px;
 }
 
 .client-deal-value {
@@ -748,6 +879,38 @@ textarea {
 .client-status-select {
     width: auto;
     min-width: 125px;
+}
+
+
+/* CLIENT ACTIONS */
+
+.client-actions {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 16px;
+}
+
+.edit-client-button,
+.delete-client-button,
+.view-client-button {
+    width: auto;
+
+    padding: 7px 12px;
+
+    font-size: 13px;
+}
+
+.edit-client-button,
+.view-client-button {
+    background-color: var(--primary-color);
+}
+
+.edit-client-button:hover,
+.view-client-button:hover {
+    background-color: var(--primary-hover-color);
 }
 
 .delete-client-button {
@@ -761,8 +924,11 @@ textarea {
 
 /* STATUS BADGES */
 
-.status-badge {
-    display: inline-block;
+.status-badge,
+.client-status {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 
     padding: 5px 10px;
 
@@ -791,7 +957,6 @@ textarea {
     background-color: rgba(239, 68, 68, 0.18);
     color: var(--error-color);
 }
-
 
 /* MODALS */
 
@@ -867,7 +1032,7 @@ textarea {
 }
 
 
-/* CLIENT DETAILS MODAL */
+/* CLIENT DETAILS */
 
 .client-details-content {
     max-width: 680px;
@@ -885,6 +1050,8 @@ textarea {
 .client-details-header img {
     width: 80px;
     height: 80px;
+
+    flex-shrink: 0;
 
     border-radius: 50%;
 
@@ -904,6 +1071,14 @@ textarea {
     gap: 14px;
 
     margin-bottom: 28px;
+}
+
+.client-details-information p {
+    padding: 12px;
+
+    background-color: var(--surface-light-color);
+
+    border-radius: 8px;
 }
 
 .client-notes-section {
@@ -969,6 +1144,8 @@ textarea {
     justify-content: center;
     align-items: center;
 
+    flex-shrink: 0;
+
     border-radius: 50%;
 
     background-color: var(--primary-color);
@@ -976,8 +1153,6 @@ textarea {
 
     font-size: 32px;
     font-weight: 700;
-
-    flex-shrink: 0;
 }
 
 .profile-details h2 {
@@ -1014,6 +1189,21 @@ textarea {
 }
 
 
+/* CHECKBOX */
+
+.checkbox-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.checkbox-group input {
+    width: auto;
+}
+
+
 /* DANGER ZONE */
 
 .danger-zone {
@@ -1035,22 +1225,93 @@ textarea {
 }
 
 
+/* EMPTY STATES */
+
+.empty-state {
+    grid-column: 1 / -1;
+
+    padding: 30px;
+
+    background-color: var(--surface-color);
+    color: var(--muted-text-color);
+
+    border-radius: var(--border-radius);
+
+    text-align: center;
+}
+
+
+/* ACCESSIBILITY */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(99, 102, 241, 0.35);
+    outline-offset: 2px;
+}
+
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--surface-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--surface-light-color);
+
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-color);
+}
+
+
+/* TEXT SELECTION */
+
+::selection {
+    background-color: rgba(99, 102, 241, 0.35);
+    color: #ffffff;
+}
+
 /* RESPONSIVE DESIGN */
 
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
 
     .stats-section,
-    .pipeline-list,
+    .pipeline-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     #clients-list {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .clients-toolbar {
         grid-template-columns: 1fr;
     }
 
+    .recent-client-card {
+        grid-template-columns:
+            minmax(120px, 1fr) minmax(150px, 1fr) 90px 100px;
+
+        gap: 16px;
+    }
+}
+
+
+@media (max-width: 768px) {
     .header {
         flex-wrap: wrap;
+
+        padding: 18px 20px;
     }
 
     .header nav {
@@ -1061,12 +1322,19 @@ textarea {
     .header nav ul {
         justify-content: center;
         flex-wrap: wrap;
-    }
-}
 
-@media (max-width: 768px) {
+        gap: 12px;
+    }
+
+    .dashboard-page,
+    .clients-page,
+    .profile-page {
+        padding: 20px;
+    }
 
     .welcome-section,
+    .page-heading,
+    .section-heading,
     .profile-information,
     .client-details-header {
         flex-direction: column;
@@ -1080,19 +1348,53 @@ textarea {
         grid-template-columns: 1fr;
     }
 
-    .page-heading {
-        flex-direction: column;
+    .page-heading,
+    .section-heading {
         align-items: stretch;
     }
 
-    .dashboard-page,
-    .clients-page,
-    .profile-page {
-        padding: 20px;
+    .recent-client-card {
+        grid-template-columns: 1fr auto;
+
+        gap: 12px 20px;
+
+        min-height: auto;
+
+        padding: 18px;
+    }
+
+    .recent-client-name {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .recent-client-company {
+        grid-column: 1;
+        grid-row: 2;
+
+        text-align: left;
+    }
+
+    .recent-client-value {
+        grid-column: 2;
+        grid-row: 1;
+
+        justify-self: end;
+    }
+
+    .recent-client-status {
+        grid-column: 2;
+        grid-row: 2;
+
+        justify-self: end;
+    }
+
+    .client-card-footer {
+        flex-wrap: wrap;
     }
 
     .modal-content {
-        padding: 20px;
+        padding: 24px 20px;
     }
 
     .auth-card {
@@ -1100,18 +1402,92 @@ textarea {
     }
 }
 
-@media (max-width: 480px) {
 
+@media (max-width: 480px) {
     .header {
         padding: 16px;
+    }
+
+    .logo {
+        font-size: 24px;
     }
 
     .header button {
         width: 100%;
     }
 
-    .logo {
-        font-size: 24px;
+    .header nav ul {
+        flex-direction: column;
+    }
+
+    .header nav a {
+        width: 100%;
+
+        text-align: center;
+    }
+
+    .stats-section,
+    .pipeline-list {
+        grid-template-columns: 1fr;
+    }
+
+    .recent-client-card {
+        grid-template-columns: 1fr;
+
+        gap: 8px;
+    }
+
+    .recent-client-name,
+    .recent-client-company,
+    .recent-client-value,
+    .recent-client-status {
+        grid-column: 1;
+        grid-row: auto;
+
+        justify-self: start;
+
+        text-align: left;
+    }
+
+    .recent-client-company {
+        margin-bottom: 6px;
+    }
+
+    .quick-actions-buttons {
+        flex-direction: column;
+    }
+
+    .quick-action-button,
+    #export-clients-button {
+        width: 100%;
+    }
+
+    .filter-buttons {
+        flex-direction: column;
+    }
+
+    .filter-button,
+    #client-sort {
+        width: 100%;
+    }
+
+    .client-card-footer,
+    .client-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .client-status-select,
+    .edit-client-button,
+    .delete-client-button,
+    .view-client-button {
+        width: 100%;
+    }
+
+    .profile-information {
+        align-items: center;
+
+        text-align: center;
     }
 
     .toast {
@@ -1121,73 +1497,12 @@ textarea {
         min-width: auto;
         max-width: none;
     }
-}
 
-.delete-client-button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background-color 0.3s;
-}
+    .modal {
+        padding: 12px;
+    }
 
-.delete-client-button:hover {
-    background-color: #bb2d3b;
-}
-
-.edit-client-button {
-    background-color: #0d6efd;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 13px;
-    cursor: pointer;
-    margin-top: 10px;
-    margin-right: 8px;
-    transition: background-color 0.3s;
-}
-
-.edit-client-button:hover {
-    background-color: #0b5ed7;
-}
-
-#export-clients-button {
-    width: auto;
-    padding: 8px 14px;
-    font-size: 14px;
-    display: inline-block;
-}
-
-.quick-action-button {
-    display: inline-block;
-    padding: 8px 14px;
-    font-size: 14px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: 0.3s;
-}
-
-.quick-action-button:first-child {
-    background-color: #5b8def;
-    color: white;
-}
-
-.quick-action-button:first-child:hover {
-    background-color: #4a7de0;
-}
-
-#export-clients-button {
-    background-color: #2563eb;
-    color: white;
-}
-
-#export-clients-button:hover {
-    background-color: #1d4ed8;
+    .modal-content {
+        padding: 24px 16px;
+    }
 }

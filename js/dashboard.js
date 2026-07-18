@@ -40,6 +40,10 @@ const pipelineLostElement = document.querySelector(
     "#pipeline-lost"
 );
 
+const recentClientsList = document.querySelector(
+    "#recent-clients-list"
+);
+
 const exportClientsButton = document.querySelector(
     "#export-clients-button"
 );
@@ -156,7 +160,10 @@ function displayWonRevenue() {
             return client.status === "Won";
         })
         .reduce((total, client) => {
-            return total + Number(client.dealValue);
+            return (
+                total +
+                Number(client.dealValue || 0)
+            );
         }, 0);
 
     wonRevenueElement.textContent =
@@ -236,6 +243,64 @@ function displayPipelineOverview() {
         pipelineLostElement.textContent =
             lostClients.length;
     }
+}
+
+
+/* RECENT CLIENTS */
+
+function displayRecentClients() {
+    if (!recentClientsList) {
+        return;
+    }
+
+    const clients = getClients();
+
+    const recentClients = [...clients]
+        .sort((a, b) => {
+            return (
+                new Date(b.createdAt) -
+                new Date(a.createdAt)
+            );
+        })
+        .slice(0, 4);
+
+    if (recentClients.length === 0) {
+        recentClientsList.innerHTML = `
+            <p>No clients added yet.</p>
+        `;
+
+        return;
+    }
+
+    recentClientsList.innerHTML = recentClients
+        .map((client) => {
+            const dealValue = Number(
+                client.dealValue || 0
+            );
+
+            return `
+                <article class="recent-client-card">
+
+                    <h3 class="recent-client-name">
+                        ${client.name}
+                    </h3>
+
+                    <p class="recent-client-company">
+                        ${client.company || "No company"}
+                    </p>
+
+                    <strong class="recent-client-value">
+                        $${dealValue.toLocaleString()}
+                    </strong>
+
+                    <span class="recent-client-status">
+                        ${client.status}
+                    </span>
+
+                </article>
+            `;
+        })
+        .join("");
 }
 
 
@@ -384,3 +449,5 @@ displayWonRevenue();
 displayNewThisWeek();
 
 displayPipelineOverview();
+
+displayRecentClients();
