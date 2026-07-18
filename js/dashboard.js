@@ -12,6 +12,18 @@ const totalClientsElement = document.querySelector(
     "#total-clients"
 );
 
+const activeDealsElement = document.querySelector(
+    "#active-deals"
+);
+
+const wonRevenueElement = document.querySelector(
+    "#won-revenue"
+);
+
+const newThisWeekElement = document.querySelector(
+    "#new-this-week"
+);
+
 const exportClientsButton = document.querySelector(
     "#export-clients-button"
 );
@@ -93,6 +105,81 @@ function displayTotalClients() {
 }
 
 
+/* ACTIVE DEALS */
+
+function displayActiveDeals() {
+    if (!activeDealsElement) {
+        return;
+    }
+
+    const clients = getClients();
+
+    const activeDeals = clients.filter((client) => {
+        return (
+            client.status === "Lead" ||
+            client.status === "Contacted"
+        );
+    });
+
+    activeDealsElement.textContent =
+        activeDeals.length;
+}
+
+
+/* WON REVENUE */
+
+function displayWonRevenue() {
+    if (!wonRevenueElement) {
+        return;
+    }
+
+    const clients = getClients();
+
+    const wonRevenue = clients
+        .filter((client) => {
+            return client.status === "Won";
+        })
+        .reduce((total, client) => {
+            return total + Number(client.dealValue);
+        }, 0);
+
+    wonRevenueElement.textContent =
+        `$${wonRevenue.toLocaleString()}`;
+}
+
+
+/* NEW THIS WEEK */
+
+function displayNewThisWeek() {
+    if (!newThisWeekElement) {
+        return;
+    }
+
+    const clients = getClients();
+
+    const currentDate = new Date();
+
+    const sevenDaysAgo = new Date();
+
+    sevenDaysAgo.setDate(
+        currentDate.getDate() - 7
+    );
+
+    const newClients = clients.filter((client) => {
+        const clientCreatedDate =
+            new Date(client.createdAt);
+
+        return (
+            clientCreatedDate >= sevenDaysAgo &&
+            clientCreatedDate <= currentDate
+        );
+    });
+
+    newThisWeekElement.textContent =
+        newClients.length;
+}
+
+
 /* ESCAPE CSV VALUE */
 
 function escapeCSVValue(value) {
@@ -155,7 +242,9 @@ function exportClients() {
     const clients = getClients();
 
     if (clients.length === 0) {
-        showToast("There are no clients to export");
+        showToast(
+            "There are no clients to export"
+        );
 
         return;
     }
@@ -168,7 +257,8 @@ function exportClients() {
         return;
     }
 
-    const csvContent = createClientsCSV(clients);
+    const csvContent =
+        createClientsCSV(clients);
 
     const csvBlob = new Blob(
         [csvContent],
@@ -192,7 +282,9 @@ function exportClients() {
     downloadLink.download =
         `crm-clients-${currentDate}.csv`;
 
-    document.body.appendChild(downloadLink);
+    document.body.appendChild(
+        downloadLink
+    );
 
     downloadLink.click();
 
@@ -225,3 +317,9 @@ setInterval(updateClock, 1000);
 displayWelcomeMessage();
 
 displayTotalClients();
+
+displayActiveDeals();
+
+displayWonRevenue();
+
+displayNewThisWeek();
