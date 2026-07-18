@@ -48,22 +48,93 @@ const clientSort = document.querySelector(
     "#client-sort"
 );
 
+const clientSearch = document.querySelector(
+    "#client-search"
+);
+
+const filterButtons = document.querySelectorAll(
+    ".filter-button"
+);
+
+const clientModalTitle = addClientModal.querySelector(
+    "h2"
+);
+
+const clientSubmitButton = clientForm.querySelector(
+    'button[type="submit"]'
+);
+
+
+/* ACTIVE FILTER */
+
+let activeStatus = "All";
+
+
+/* EDITING CLIENT */
+
+let editingClientId = null;
+
 
 /* AUTO CLOSE TIMER */
 
 let autoCloseTimer;
 
 
-/* OPEN MODAL */
+/* START AUTO CLOSE TIMER */
 
-function openAddClientModal() {
-    addClientModal.classList.remove("hidden");
-
+function startAutoCloseTimer() {
     clearTimeout(autoCloseTimer);
 
     autoCloseTimer = setTimeout(() => {
         closeAddClientModal();
     }, 10000);
+}
+
+
+/* OPEN ADD CLIENT MODAL */
+
+function openAddClientModal() {
+    editingClientId = null;
+
+    clientForm.reset();
+
+    if (clientModalTitle) {
+        clientModalTitle.textContent = "Add Client";
+    }
+
+    if (clientSubmitButton) {
+        clientSubmitButton.textContent = "Add Client";
+    }
+
+    addClientModal.classList.remove("hidden");
+
+    startAutoCloseTimer();
+}
+
+
+/* OPEN EDIT CLIENT MODAL */
+
+function openEditClientModal(client) {
+    editingClientId = client.id;
+
+    clientNameInput.value = client.name;
+    clientEmailInput.value = client.email;
+    clientPhoneInput.value = client.phone;
+    clientCompanyInput.value = client.company || "";
+    clientDealValueInput.value = client.dealValue;
+    clientStatusInput.value = client.status;
+
+    if (clientModalTitle) {
+        clientModalTitle.textContent = "Edit Client";
+    }
+
+    if (clientSubmitButton) {
+        clientSubmitButton.textContent = "Save Changes";
+    }
+
+    addClientModal.classList.remove("hidden");
+
+    startAutoCloseTimer();
 }
 
 
@@ -101,6 +172,25 @@ function createClient() {
         ),
         notes: [],
         createdAt: new Date().toISOString(),
+    };
+}
+
+
+/* CREATE UPDATED CLIENT */
+
+function createUpdatedClient(existingClient) {
+    return {
+        ...existingClient,
+        name: clientNameInput.value.trim(),
+        email: clientEmailInput.value
+            .trim()
+            .toLowerCase(),
+        phone: clientPhoneInput.value.trim(),
+        company: clientCompanyInput.value.trim(),
+        status: clientStatusInput.value,
+        dealValue: Number(
+            clientDealValueInput.value
+        ),
     };
 }
 
@@ -156,6 +246,42 @@ function sortClients(clients) {
 }
 
 
+/* FILTER CLIENTS */
+
+function filterClients(clients) {
+    if (activeStatus === "All") {
+        return clients;
+    }
+
+    return clients.filter((client) => {
+        return client.status === activeStatus;
+    });
+}
+
+
+/* SEARCH CLIENTS */
+
+function searchClients(clients) {
+    const searchValue = clientSearch.value
+        .trim()
+        .toLowerCase();
+
+    return clients.filter((client) => {
+        const clientName = client.name
+            .toLowerCase();
+
+        const clientCompany = (
+            client.company || ""
+        ).toLowerCase();
+
+        return (
+            clientName.includes(searchValue) ||
+            clientCompany.includes(searchValue)
+        );
+    });
+}
+
+
 /* RENDER CLIENTS */
 
 function renderClients(clients) {
@@ -205,6 +331,22 @@ function renderClients(clients) {
                         $${client.dealValue}
                     </p>
 
+                    <button
+                        class="edit-client-button"
+                        data-client-id="${client.id}"
+                        type="button"
+                    >
+                        Edit
+                    </button>
+
+                    <button
+                        class="delete-client-button"
+                        data-client-id="${client.id}"
+                        type="button"
+                    >
+                        Delete
+                    </button>
+
                 </article>
             `;
         })
@@ -212,37 +354,140 @@ function renderClients(clients) {
 }
 
 
-/* DISPLAY SORTED CLIENTS */
+/* DISPLAY CLIENTS */
 
-function displaySortedClients() {
+function displayClients() {
     const clients = getClients();
 
-    const sortedClients = sortClients(clients);
+    const statusFilteredClients =
+        filterClients(clients);
+
+    const searchedClients =
+        searchClients(statusFilteredClients);
+
+    const sortedClients =
+        sortClients(searchedClients);
 
     renderClients(sortedClients);
 }
 
 
-/* ADD CLIENT */
+/* HANDLE FILTER BUTTON */
+
+function handleFilterButton(event) {
+    activeStatus = event.currentTarget.dataset.status;
+
+    filterButtons.forEach((button) => {
+        button.classList.remove("active");
+    });
+
+    event.currentTarget.classList.add("active");
+
+    displayClients();
+}
+
+
+/* EDIT CLIENT */
+
+function handleClientEdit(event) {
+    const editButton = event.target.closest(
+        ".edit-client-button"
+    );
+
+    if (!editButton) {
+        return;
+    }
+
+    const clientId = Number(
+        editButton.dataset.clientId
+    );
+
+    const clients = getClients();
+
+    const selectedClient = clients.find((client) => {
+        return client.id === clientId;
+    });
+
+    if (!selectedClient) {
+        showToast("Client could not be found");
+
+        return;
+    }
+
+    openEditClientModal(selectedClient);
+}
+
+
+/* DELETE CLIENT */
+
+function handleClientDelete(event) {
+    const deleteButton = event.target.closest(
+        ".delete-client-button"
+    );
+
+    if (!deleteButton) {
+        return;
+    }
+
+    const clientId = Number(
+        deleteButton.dataset.clientId
+    );
+
+    const shouldDelete = confirm(
+        "Are you sure you want to delete this client?"
+    );
+
+    if (!shouldDelete) {
+        return;
+    }
+
+    removeClientFromStorage(clientId);
+
+    displayClients();
+
+    showToast("Client deleted successfully");
+}
+
+
+/* HANDLE CLIENT FORM */
 
 function handleClientSubmit(event) {
     event.preventDefault();
 
-    const newClient = createClient();
+    if (editingClientId !== null) {
+        const clients = getClients();
 
-    const updatedClients =
+        const existingClient = clients.find((client) => {
+            return client.id === editingClientId;
+        });
+
+        if (!existingClient) {
+            showToast("Client could not be found");
+
+            return;
+        }
+
+        const updatedClient =
+            createUpdatedClient(existingClient);
+
+        updateClientInStorage(updatedClient);
+
+        showToast("Client updated successfully");
+    } else {
+        const newClient = createClient();
+
         addClientToStorage(newClient);
 
-    const sortedClients =
-        sortClients(updatedClients);
+        showToast("Client added successfully");
+    }
 
-    renderClients(sortedClients);
+    displayClients();
 
     clientForm.reset();
 
-    closeAddClientModal();
+    editingClientId = null;
 
-    showToast("Client added successfully");
+    closeAddClientModal();
 }
 
 
@@ -296,18 +541,37 @@ clientForm.addEventListener(
 
 clientSort.addEventListener(
     "change",
-    displaySortedClients
+    displayClients
 );
+
+clientSearch.addEventListener(
+    "input",
+    displayClients
+);
+
+clientsList.addEventListener(
+    "click",
+    handleClientEdit
+);
+
+clientsList.addEventListener(
+    "click",
+    handleClientDelete
+);
+
+filterButtons.forEach((button) => {
+    button.addEventListener(
+        "click",
+        handleFilterButton
+    );
+});
 
 
 /* PAGE INITIALIZATION */
 
 loadClients()
-    .then((clients) => {
-        const sortedClients =
-            sortClients(clients);
-
-        renderClients(sortedClients);
+    .then(() => {
+        displayClients();
     })
     .catch(() => {
         clientsList.innerHTML = `
