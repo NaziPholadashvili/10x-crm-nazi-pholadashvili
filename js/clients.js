@@ -195,6 +195,88 @@ function createUpdatedClient(existingClient) {
 }
 
 
+/* CHECK CLIENT EMAIL */
+
+function clientEmailExists(email, excludedClientId = null) {
+    const clients = getClients();
+
+    return clients.some((client) => {
+        const isSameEmail =
+            client.email.toLowerCase() ===
+            email.toLowerCase();
+
+        const isDifferentClient =
+            client.id !== excludedClientId;
+
+        return isSameEmail && isDifferentClient;
+    });
+}
+
+
+/* VALIDATE CLIENT FORM */
+
+function validateClientForm() {
+    const name = clientNameInput.value.trim();
+
+    const email = clientEmailInput.value
+        .trim()
+        .toLowerCase();
+
+    const phone = clientPhoneInput.value.trim();
+
+    const dealValue = Number(
+        clientDealValueInput.value
+    );
+
+    if (name === "") {
+        showToast("Client name is required");
+
+        clientNameInput.focus();
+
+        return false;
+    }
+
+    if (email === "") {
+        showToast("Client email is required");
+
+        clientEmailInput.focus();
+
+        return false;
+    }
+
+    if (!email.includes("@")) {
+        showToast("Enter a valid email address");
+
+        clientEmailInput.focus();
+
+        return false;
+    }
+
+    if (phone === "") {
+        showToast("Client phone is required");
+
+        clientPhoneInput.focus();
+
+        return false;
+    }
+
+    if (
+        clientDealValueInput.value.trim() === "" ||
+        dealValue < 0
+    ) {
+        showToast(
+            "Deal value must be 0 or greater"
+        );
+
+        clientDealValueInput.focus();
+
+        return false;
+    }
+
+    return true;
+}
+
+
 /* SORT CLIENTS */
 
 function sortClients(clients) {
@@ -453,6 +535,31 @@ function handleClientDelete(event) {
 
 function handleClientSubmit(event) {
     event.preventDefault();
+
+    const isFormValid = validateClientForm();
+
+    if (!isFormValid) {
+        return;
+    }
+
+    const enteredEmail = clientEmailInput.value
+        .trim()
+        .toLowerCase();
+
+    const emailAlreadyExists = clientEmailExists(
+        enteredEmail,
+        editingClientId
+    );
+
+    if (emailAlreadyExists) {
+        showToast(
+            "A client with this email already exists"
+        );
+
+        clientEmailInput.focus();
+
+        return;
+    }
 
     if (editingClientId !== null) {
         const clients = getClients();
