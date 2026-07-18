@@ -1155,3 +1155,39 @@ textarea {
 .edit-client-button:hover {
     background-color: #0b5ed7;
 }
+
+#export-clients-button {
+    width: auto;
+    padding: 8px 14px;
+    font-size: 14px;
+    display: inline-block;
+}
+
+.quick-action-button {
+    display: inline-block;
+    padding: 8px 14px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.quick-action-button:first-child {
+    background-color: #5b8def;
+    color: white;
+}
+
+.quick-action-button:first-child:hover {
+    background-color: #4a7de0;
+}
+
+#export-clients-button {
+    background-color: #2563eb;
+    color: white;
+}
+
+#export-clients-button:hover {
+    background-color: #1d4ed8;
+}
