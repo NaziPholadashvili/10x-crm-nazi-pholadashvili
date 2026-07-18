@@ -1,4 +1,15 @@
-/* CLIENT MODAL ELEMENTS */
+"use strict";
+
+/* =========================================================
+   LOCAL STORAGE
+========================================================= */
+
+const CLIENTS_STORAGE_KEY = "crm_clients";
+
+
+/* =========================================================
+   CLIENTS PAGE ELEMENTS
+========================================================= */
 
 const openAddClientModalButton = document.querySelector(
     "#open-add-client-modal"
@@ -40,182 +51,326 @@ const clientStatusInput = document.querySelector(
     "#client-status"
 );
 
+const clientNameError = document.querySelector(
+    "#client-name-error"
+);
+
+const clientEmailError = document.querySelector(
+    "#client-email-error"
+);
+
+const clientPhoneError = document.querySelector(
+    "#client-phone-error"
+);
+
+const clientDealValueError = document.querySelector(
+    "#client-deal-value-error"
+);
+
 const clientsList = document.querySelector(
     "#clients-list"
 );
 
-const clientSort = document.querySelector(
-    "#client-sort"
+const clientSearchInput = document.querySelector(
+    "#client-search"
 );
 
-const clientSearch = document.querySelector(
-    "#client-search"
+const clientSortSelect = document.querySelector(
+    "#client-sort"
 );
 
 const filterButtons = document.querySelectorAll(
     ".filter-button"
 );
 
-const clientModalTitle = addClientModal.querySelector(
-    "h2"
+
+/* =========================================================
+   CLIENT DETAILS MODAL ELEMENTS
+========================================================= */
+
+const clientDetailsModal = document.querySelector(
+    "#client-details-modal"
 );
 
-const clientSubmitButton = clientForm.querySelector(
-    'button[type="submit"]'
+const closeClientDetailsModalButton = document.querySelector(
+    "#close-client-details-modal"
+);
+
+const detailsClientImage = document.querySelector(
+    "#details-client-image"
+);
+
+const clientDetailsTitle = document.querySelector(
+    "#client-details-title"
+);
+
+const detailsClientCompany = document.querySelector(
+    "#details-client-company"
+);
+
+const detailsClientEmail = document.querySelector(
+    "#details-client-email"
+);
+
+const detailsClientPhone = document.querySelector(
+    "#details-client-phone"
+);
+
+const detailsClientStatus = document.querySelector(
+    "#details-client-status"
+);
+
+const detailsClientDealValue = document.querySelector(
+    "#details-client-deal-value"
+);
+
+const detailsClientCreatedAt = document.querySelector(
+    "#details-client-created-at"
+);
+
+const clientNotesList = document.querySelector(
+    "#client-notes-list"
+);
+
+const clientNoteInput = document.querySelector(
+    "#client-note"
+);
+
+const addNoteButton = document.querySelector(
+    "#add-note-button"
+);
+
+const reminderButton = document.querySelector(
+    "#reminder-button"
 );
 
 
-/* ACTIVE FILTER */
+/* =========================================================
+   PAGE STATE
+========================================================= */
 
+let clientsState = [];
 let activeStatus = "All";
+let selectedClientId = null;
+let isSubmittingClient = false;
 
 
-/* EDITING CLIENT */
+/* =========================================================
+   GENERAL HELPERS
+========================================================= */
 
-let editingClientId = null;
-
-
-/* AUTO CLOSE TIMER */
-
-let autoCloseTimer;
-
-
-/* START AUTO CLOSE TIMER */
-
-function startAutoCloseTimer() {
-    clearTimeout(autoCloseTimer);
-
-    autoCloseTimer = setTimeout(() => {
-        closeAddClientModal();
-    }, 10000);
+function saveClientsState() {
+    localStorage.setItem(
+        CLIENTS_STORAGE_KEY,
+        JSON.stringify(clientsState)
+    );
 }
 
 
-/* OPEN ADD CLIENT MODAL */
-
-function openAddClientModal() {
-    editingClientId = null;
-
-    clientForm.reset();
-
-    if (clientModalTitle) {
-        clientModalTitle.textContent = "Add Client";
-    }
-
-    if (clientSubmitButton) {
-        clientSubmitButton.textContent = "Add Client";
-    }
-
-    addClientModal.classList.remove("hidden");
-
-    startAutoCloseTimer();
-}
-
-
-/* OPEN EDIT CLIENT MODAL */
-
-function openEditClientModal(client) {
-    editingClientId = client.id;
-
-    clientNameInput.value = client.name;
-    clientEmailInput.value = client.email;
-    clientPhoneInput.value = client.phone;
-    clientCompanyInput.value = client.company || "";
-    clientDealValueInput.value = client.dealValue;
-    clientStatusInput.value = client.status;
-
-    if (clientModalTitle) {
-        clientModalTitle.textContent = "Edit Client";
-    }
-
-    if (clientSubmitButton) {
-        clientSubmitButton.textContent = "Save Changes";
-    }
-
-    addClientModal.classList.remove("hidden");
-
-    startAutoCloseTimer();
-}
-
-
-/* CLOSE MODAL */
-
-function closeAddClientModal() {
-    addClientModal.classList.add("hidden");
-
-    clearTimeout(autoCloseTimer);
-}
-
-
-/* STOP AUTO CLOSE */
-
-function stopAutoClose() {
-    clearTimeout(autoCloseTimer);
-}
-
-
-/* CREATE CLIENT */
-
-function createClient() {
-    return {
-        id: Date.now(),
-        name: clientNameInput.value.trim(),
-        email: clientEmailInput.value
-            .trim()
-            .toLowerCase(),
-        phone: clientPhoneInput.value.trim(),
-        company: clientCompanyInput.value.trim(),
-        image: "",
-        status: clientStatusInput.value,
-        dealValue: Number(
-            clientDealValueInput.value
-        ),
-        notes: [],
-        createdAt: new Date().toISOString(),
-    };
-}
-
-
-/* CREATE UPDATED CLIENT */
-
-function createUpdatedClient(existingClient) {
-    return {
-        ...existingClient,
-        name: clientNameInput.value.trim(),
-        email: clientEmailInput.value
-            .trim()
-            .toLowerCase(),
-        phone: clientPhoneInput.value.trim(),
-        company: clientCompanyInput.value.trim(),
-        status: clientStatusInput.value,
-        dealValue: Number(
-            clientDealValueInput.value
-        ),
-    };
-}
-
-
-/* CHECK CLIENT EMAIL */
-
-function clientEmailExists(email, excludedClientId = null) {
-    const clients = getClients();
-
-    return clients.some((client) => {
-        const isSameEmail =
-            client.email.toLowerCase() ===
-            email.toLowerCase();
-
-        const isDifferentClient =
-            client.id !== excludedClientId;
-
-        return isSameEmail && isDifferentClient;
+function findClientById(clientId) {
+    return clientsState.find((client) => {
+        return String(client.id) === String(clientId);
     });
 }
 
 
-/* VALIDATE CLIENT FORM */
+function formatDealValue(value) {
+    const numericValue = Number(value);
+
+    if (Number.isNaN(numericValue)) {
+        return "$0";
+    }
+
+    return `$${numericValue.toLocaleString()}`;
+}
+
+
+function formatClientDate(dateValue) {
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Unknown date";
+    }
+
+    return date.toLocaleDateString();
+}
+
+
+function getClientInitials(name) {
+    return String(name || "Client")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((word) => {
+            return word.charAt(0).toUpperCase();
+        })
+        .join("");
+}
+
+
+function createDefaultAvatar(name) {
+    const initials = getClientInitials(name);
+
+    const svg = `
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="128"
+            height="128"
+            viewBox="0 0 128 128"
+        >
+            <rect
+                width="128"
+                height="128"
+                rx="64"
+                fill="#dbeafe"
+            />
+
+            <text
+                x="64"
+                y="68"
+                text-anchor="middle"
+                dominant-baseline="middle"
+                font-family="Arial, sans-serif"
+                font-size="38"
+                font-weight="700"
+                fill="#1e3a8a"
+            >
+                ${initials}
+            </text>
+        </svg>
+    `;
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+
+function getClientImage(client) {
+    if (
+        typeof client.image === "string" &&
+        client.image.trim() !== ""
+    ) {
+        return client.image;
+    }
+
+    return createDefaultAvatar(client.name);
+}
+
+
+function isValidEmail(email) {
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    return emailPattern.test(email);
+}
+
+
+function clientEmailExists(email) {
+    return clientsState.some((client) => {
+        return (
+            String(client.email || "")
+                .trim()
+                .toLowerCase() === email
+        );
+    });
+}
+
+
+function generateClientId(apiClientId) {
+    const idAlreadyExists = clientsState.some((client) => {
+        return String(client.id) === String(apiClientId);
+    });
+
+    if (
+        apiClientId !== undefined &&
+        apiClientId !== null &&
+        !idAlreadyExists
+    ) {
+        return apiClientId;
+    }
+
+    return `${Date.now()}-${Math.random()
+        .toString(16)
+        .slice(2)}`;
+}
+
+
+/* =========================================================
+   FIELD ERROR HELPERS
+========================================================= */
+
+function setFieldError(
+    inputElement,
+    errorElement,
+    message
+) {
+    if (!inputElement) {
+        return;
+    }
+
+    inputElement.classList.add("input-error");
+
+    inputElement.setAttribute(
+        "aria-invalid",
+        "true"
+    );
+
+    if (errorElement) {
+        errorElement.textContent = message;
+    }
+}
+
+
+function clearFieldError(
+    inputElement,
+    errorElement
+) {
+    if (!inputElement) {
+        return;
+    }
+
+    inputElement.classList.remove("input-error");
+
+    inputElement.removeAttribute(
+        "aria-invalid"
+    );
+
+    if (errorElement) {
+        errorElement.textContent = "";
+    }
+}
+
+
+function clearClientFormErrors() {
+    clearFieldError(
+        clientNameInput,
+        clientNameError
+    );
+
+    clearFieldError(
+        clientEmailInput,
+        clientEmailError
+    );
+
+    clearFieldError(
+        clientPhoneInput,
+        clientPhoneError
+    );
+
+    clearFieldError(
+        clientDealValueInput,
+        clientDealValueError
+    );
+}
+
+
+/* =========================================================
+   CLIENT FORM VALIDATION
+========================================================= */
 
 function validateClientForm() {
+    clearClientFormErrors();
+
     const name = clientNameInput.value.trim();
 
     const email = clientEmailInput.value
@@ -224,464 +379,1572 @@ function validateClientForm() {
 
     const phone = clientPhoneInput.value.trim();
 
-    const dealValue = Number(
-        clientDealValueInput.value
-    );
+    const dealValueText =
+        clientDealValueInput.value.trim();
 
-    if (name === "") {
-        showToast("Client name is required");
+    const dealValue = Number(dealValueText);
 
-        clientNameInput.focus();
+    let isFormValid = true;
 
-        return false;
-    }
 
-    if (email === "") {
-        showToast("Client email is required");
-
-        clientEmailInput.focus();
-
-        return false;
-    }
-
-    if (!email.includes("@")) {
-        showToast("Enter a valid email address");
-
-        clientEmailInput.focus();
-
-        return false;
-    }
-
-    if (phone === "") {
-        showToast("Client phone is required");
-
-        clientPhoneInput.focus();
-
-        return false;
-    }
-
-    if (
-        clientDealValueInput.value.trim() === "" ||
-        dealValue < 0
-    ) {
-        showToast(
-            "Deal value must be 0 or greater"
+    if (name.length < 3) {
+        setFieldError(
+            clientNameInput,
+            clientNameError,
+            "Name must be at least 3 characters"
         );
 
-        clientDealValueInput.focus();
-
-        return false;
+        isFormValid = false;
     }
 
-    return true;
+
+    if (!isValidEmail(email)) {
+        setFieldError(
+            clientEmailInput,
+            clientEmailError,
+            "Please enter a valid email address"
+        );
+
+        isFormValid = false;
+    } else if (clientEmailExists(email)) {
+        setFieldError(
+            clientEmailInput,
+            clientEmailError,
+            "A client with this email already exists"
+        );
+
+        isFormValid = false;
+    }
+
+
+    if (
+        phone !== "" &&
+        phone.length < 6
+    ) {
+        setFieldError(
+            clientPhoneInput,
+            clientPhoneError,
+            "Phone number looks too short"
+        );
+
+        isFormValid = false;
+    }
+
+
+    if (
+        dealValueText === "" ||
+        Number.isNaN(dealValue) ||
+        dealValue <= 0
+    ) {
+        setFieldError(
+            clientDealValueInput,
+            clientDealValueError,
+            "Deal value must be a positive number"
+        );
+
+        isFormValid = false;
+    }
+
+    return isFormValid;
 }
 
 
-/* SORT CLIENTS */
+/* =========================================================
+   ADD CLIENT MODAL
+========================================================= */
 
-function sortClients(clients) {
-    const sortedClients = [...clients];
+function openAddClientModal() {
+    clientForm.reset();
 
-    if (clientSort.value === "newest") {
-        sortedClients.sort((a, b) => {
-            return (
-                new Date(b.createdAt) -
-                new Date(a.createdAt)
-            );
-        });
-    }
+    clearClientFormErrors();
 
-    if (clientSort.value === "oldest") {
-        sortedClients.sort((a, b) => {
-            return (
-                new Date(a.createdAt) -
-                new Date(b.createdAt)
-            );
-        });
-    }
+    clientStatusInput.value = "Lead";
 
-    if (clientSort.value === "name-az") {
-        sortedClients.sort((a, b) => {
-            return a.name.localeCompare(b.name);
-        });
-    }
+    addClientModal.classList.remove("hidden");
 
-    if (clientSort.value === "name-za") {
-        sortedClients.sort((a, b) => {
-            return b.name.localeCompare(a.name);
-        });
-    }
+    addClientModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
 
-    if (clientSort.value === "deal-high") {
-        sortedClients.sort((a, b) => {
-            return b.dealValue - a.dealValue;
-        });
-    }
+    document.body.classList.add("modal-open");
 
-    if (clientSort.value === "deal-low") {
-        sortedClients.sort((a, b) => {
-            return a.dealValue - b.dealValue;
-        });
-    }
-
-    return sortedClients;
+    clientNameInput.focus();
 }
 
 
-/* FILTER CLIENTS */
+function closeAddClientModal() {
+    addClientModal.classList.add("hidden");
 
-function filterClients(clients) {
-    if (activeStatus === "All") {
-        return clients;
-    }
+    addClientModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
 
-    return clients.filter((client) => {
-        return client.status === activeStatus;
-    });
+    document.body.classList.remove("modal-open");
+
+    clientForm.reset();
+
+    clearClientFormErrors();
 }
 
 
-/* SEARCH CLIENTS */
+/* =========================================================
+   CLIENT DETAILS MODAL
+========================================================= */
 
-function searchClients(clients) {
-    const searchValue = clientSearch.value
+function closeClientDetailsModal() {
+    clientDetailsModal.classList.add("hidden");
+
+    clientDetailsModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    document.body.classList.remove("modal-open");
+
+    selectedClientId = null;
+
+    clientNoteInput.value = "";
+}
+
+
+/* =========================================================
+   FILTERING, SEARCHING AND SORTING
+========================================================= */
+
+function getVisibleClients() {
+    let visibleClients = [...clientsState];
+
+    if (activeStatus !== "All") {
+        visibleClients = visibleClients.filter((client) => {
+            return client.status === activeStatus;
+        });
+    }
+
+    const searchValue = clientSearchInput.value
         .trim()
         .toLowerCase();
 
-    return clients.filter((client) => {
-        const clientName = client.name
-            .toLowerCase();
+    if (searchValue !== "") {
+        visibleClients = visibleClients.filter((client) => {
+            const clientName = String(
+                client.name || ""
+            ).toLowerCase();
 
-        const clientCompany = (
-            client.company || ""
-        ).toLowerCase();
+            const companyName = String(
+                client.company || ""
+            ).toLowerCase();
 
-        return (
-            clientName.includes(searchValue) ||
-            clientCompany.includes(searchValue)
+            const clientEmail = String(
+                client.email || ""
+            ).toLowerCase();
+
+            return (
+                clientName.includes(searchValue) ||
+                companyName.includes(searchValue) ||
+                clientEmail.includes(searchValue)
+            );
+        });
+    }
+
+    switch (clientSortSelect.value) {
+        case "name-az":
+            visibleClients.sort((a, b) => {
+                return String(a.name || "").localeCompare(
+                    String(b.name || "")
+                );
+            });
+            break;
+
+        case "name-za":
+            visibleClients.sort((a, b) => {
+                return String(b.name || "").localeCompare(
+                    String(a.name || "")
+                );
+            });
+            break;
+
+        case "deal-high":
+            visibleClients.sort((a, b) => {
+                return (
+                    Number(b.dealValue || 0) -
+                    Number(a.dealValue || 0)
+                );
+            });
+            break;
+
+        case "deal-low":
+            visibleClients.sort((a, b) => {
+                return (
+                    Number(a.dealValue || 0) -
+                    Number(b.dealValue || 0)
+                );
+            });
+            break;
+
+        case "newest":
+        default:
+            visibleClients.sort((a, b) => {
+                return (
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                );
+            });
+    }
+
+    return visibleClients;
+}
+
+
+/* =========================================================
+   STATUS SELECT
+========================================================= */
+
+function createStatusSelect(client) {
+    const select = document.createElement("select");
+
+    select.className = "client-status-select";
+
+    select.setAttribute(
+        "aria-label",
+        `Change status for ${client.name}`
+    );
+
+    const statuses = [
+        "Lead",
+        "Contacted",
+        "Won",
+        "Lost"
+    ];
+
+    statuses.forEach((status) => {
+        const option = document.createElement("option");
+
+        option.value = status;
+        option.textContent = status;
+
+        if (status === client.status) {
+            option.selected = true;
+        }
+
+        select.append(option);
+    });
+
+    select.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+
+    select.addEventListener("change", (event) => {
+        event.stopPropagation();
+
+        client.status = select.value;
+
+        saveClientsState();
+
+        renderClients();
+
+        refreshSelectedClientDetails();
+
+        showToast(
+            "Status updated",
+            "success"
         );
     });
+
+    return select;
 }
 
 
-/* RENDER CLIENTS */
+/* =========================================================
+   DELETE CLIENT
+========================================================= */
 
-function renderClients(clients) {
-    if (!clientsList) {
-        return;
+async function deleteClient(client) {
+    const response = await fetch(
+        `https://dummyjson.com/users/${client.id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    if (
+        !response.ok &&
+        response.status !== 404
+    ) {
+        throw new Error(
+            `Could not delete client: ${response.status}`
+        );
     }
-
-    if (clients.length === 0) {
-        clientsList.innerHTML = `
-            <p>No clients found.</p>
-        `;
-
-        return;
-    }
-
-    clientsList.innerHTML = clients
-        .map((client) => {
-            return `
-                <article class="client-card">
-
-                    <h3>
-                        ${client.name}
-                    </h3>
-
-                    <p>
-                        <strong>Company:</strong>
-                        ${client.company || "No company"}
-                    </p>
-
-                    <p>
-                        <strong>Email:</strong>
-                        ${client.email}
-                    </p>
-
-                    <p>
-                        <strong>Phone:</strong>
-                        ${client.phone}
-                    </p>
-
-                    <p>
-                        <strong>Status:</strong>
-                        ${client.status}
-                    </p>
-
-                    <p>
-                        <strong>Deal Value:</strong>
-                        $${client.dealValue}
-                    </p>
-
-                    <button
-                        class="edit-client-button"
-                        data-client-id="${client.id}"
-                        type="button"
-                    >
-                        Edit
-                    </button>
-
-                    <button
-                        class="delete-client-button"
-                        data-client-id="${client.id}"
-                        type="button"
-                    >
-                        Delete
-                    </button>
-
-                </article>
-            `;
-        })
-        .join("");
 }
 
 
-/* DISPLAY CLIENTS */
+function createDeleteButton(client) {
+    const button = document.createElement("button");
 
-function displayClients() {
-    const clients = getClients();
+    button.type = "button";
 
-    const statusFilteredClients =
-        filterClients(clients);
+    button.className = "delete-client-button";
 
-    const searchedClients =
-        searchClients(statusFilteredClients);
+    button.textContent = "Delete";
 
-    const sortedClients =
-        sortClients(searchedClients);
+    button.setAttribute(
+        "aria-label",
+        `Delete ${client.name}`
+    );
 
-    renderClients(sortedClients);
-}
+    button.addEventListener("click", async (event) => {
+        event.stopPropagation();
 
+        const confirmed = window.confirm(
+            `Delete ${client.name}? This cannot be undone.`
+        );
 
-/* HANDLE FILTER BUTTON */
+        if (!confirmed) {
+            return;
+        }
 
-function handleFilterButton(event) {
-    activeStatus = event.currentTarget.dataset.status;
+        button.disabled = true;
+        button.textContent = "Deleting...";
 
-    filterButtons.forEach((button) => {
-        button.classList.remove("active");
+        try {
+            await deleteClient(client);
+
+            clientsState = clientsState.filter(
+                (currentClient) => {
+                    return (
+                        String(currentClient.id) !==
+                        String(client.id)
+                    );
+                }
+            );
+
+            saveClientsState();
+
+            if (
+                selectedClientId !== null &&
+                String(selectedClientId) ===
+                String(client.id)
+            ) {
+                closeClientDetailsModal();
+            }
+
+            renderClients();
+
+            showToast(
+                "Client deleted",
+                "success"
+            );
+
+        } catch (error) {
+            console.error(
+                "Could not delete client:",
+                error
+            );
+
+            button.disabled = false;
+            button.textContent = "Delete";
+
+            showToast(
+                "Could not delete client.",
+                "error"
+            );
+        }
     });
 
-    event.currentTarget.classList.add("active");
-
-    displayClients();
+    return button;
 }
 
 
-/* EDIT CLIENT */
+/* =========================================================
+   CLIENT CARD
+========================================================= */
 
-function handleClientEdit(event) {
-    const editButton = event.target.closest(
-        ".edit-client-button"
+function createClientCard(client) {
+    const card = document.createElement("article");
+
+    card.className = "client-card";
+
+    card.dataset.id = client.id;
+
+    card.tabIndex = 0;
+
+    card.setAttribute(
+        "role",
+        "button"
     );
 
-    if (!editButton) {
-        return;
-    }
-
-    const clientId = Number(
-        editButton.dataset.clientId
+    card.setAttribute(
+        "aria-label",
+        `Open details for ${client.name}`
     );
 
-    const clients = getClients();
-
-    const selectedClient = clients.find((client) => {
-        return client.id === clientId;
+    card.addEventListener("click", () => {
+        openClientDetails(client.id);
     });
 
-    if (!selectedClient) {
-        showToast("Client could not be found");
+    card.addEventListener("keydown", (event) => {
+        if (
+            event.key === "Enter" ||
+            event.key === " "
+        ) {
+            event.preventDefault();
 
-        return;
-    }
+            openClientDetails(client.id);
+        }
+    });
 
-    openEditClientModal(selectedClient);
+
+    const avatar = document.createElement("img");
+
+    avatar.src = getClientImage(client);
+
+    avatar.alt = `${client.name} avatar`;
+
+    avatar.className = "client-avatar";
+
+
+    const content = document.createElement("div");
+
+    content.className = "client-card-content";
+
+
+    const name = document.createElement("h3");
+
+    name.className = "client-name";
+
+    name.textContent = client.name;
+
+
+    const company = document.createElement("p");
+
+    company.className = "client-company";
+
+    company.textContent =
+        client.company || "No company";
+
+
+    const email = document.createElement("p");
+
+    email.className = "client-email";
+
+    email.textContent =
+        client.email || "No email";
+
+
+    const dealValue = document.createElement("p");
+
+    dealValue.className = "client-deal-value";
+
+    dealValue.textContent = formatDealValue(
+        client.dealValue
+    );
+
+
+    const actions = document.createElement("div");
+
+    actions.className = "client-actions";
+
+    actions.append(
+        createStatusSelect(client),
+        createDeleteButton(client)
+    );
+
+
+    content.append(
+        name,
+        company,
+        email,
+        dealValue
+    );
+
+
+    card.append(
+        avatar,
+        content,
+        actions
+    );
+
+    return card;
 }
 
 
-/* DELETE CLIENT */
+/* =========================================================
+   RENDER CLIENTS
+========================================================= */
 
-function handleClientDelete(event) {
-    const deleteButton = event.target.closest(
-        ".delete-client-button"
-    );
+function renderClients() {
+    clientsList.replaceChildren();
 
-    if (!deleteButton) {
+    const visibleClients =
+        getVisibleClients();
+
+    if (visibleClients.length === 0) {
+        const emptyMessage =
+            document.createElement("p");
+
+        emptyMessage.className =
+            "clients-message empty-clients-message";
+
+        emptyMessage.textContent =
+            "No clients found.";
+
+        clientsList.append(emptyMessage);
+
         return;
     }
 
-    const clientId = Number(
-        deleteButton.dataset.clientId
-    );
+    const clientsFragment =
+        document.createDocumentFragment();
 
-    const shouldDelete = confirm(
-        "Are you sure you want to delete this client?"
-    );
+    visibleClients.forEach((client) => {
+        clientsFragment.append(
+            createClientCard(client)
+        );
+    });
 
-    if (!shouldDelete) {
-        return;
-    }
+    clientsList.append(clientsFragment);
+}
+/* =========================================================
+   LOADING STATE
+========================================================= */
 
-    removeClientFromStorage(clientId);
+function showClientsLoading() {
+    clientsList.replaceChildren();
 
-    displayClients();
+    const loadingMessage =
+        document.createElement("p");
 
-    showToast("Client deleted successfully");
+    loadingMessage.className =
+        "clients-message";
+
+    loadingMessage.textContent =
+        "Loading clients...";
+
+    clientsList.append(loadingMessage);
 }
 
 
-/* HANDLE CLIENT FORM */
+/* =========================================================
+   ERROR STATE AND RETRY
+========================================================= */
 
-function handleClientSubmit(event) {
+function showClientsLoadError() {
+    clientsList.replaceChildren();
+
+    const errorContainer =
+        document.createElement("div");
+
+    errorContainer.className =
+        "clients-error-state";
+
+
+    const errorMessage =
+        document.createElement("p");
+
+    errorMessage.textContent =
+        "Could not load clients. Check your connection and try again.";
+
+
+    const retryButton =
+        document.createElement("button");
+
+    retryButton.type = "button";
+
+    retryButton.className =
+        "btn retry-button";
+
+    retryButton.textContent = "Retry";
+
+    retryButton.addEventListener("click", () => {
+        loadClientsData();
+    });
+
+
+    errorContainer.append(
+        errorMessage,
+        retryButton
+    );
+
+    clientsList.append(errorContainer);
+}
+
+
+/* =========================================================
+   API CLIENT TRANSFORMATION
+========================================================= */
+
+function createClientFromApiUser(user) {
+    const firstName = String(
+        user.firstName || ""
+    ).trim();
+
+    const lastName = String(
+        user.lastName || ""
+    ).trim();
+
+    const fullName =
+        `${firstName} ${lastName}`.trim();
+
+    const randomDealValue =
+        Math.floor(Math.random() * 9501) + 500;
+
+    return {
+        id: user.id,
+
+        name:
+            fullName || "Unknown Client",
+
+        email: String(user.email || "")
+            .trim()
+            .toLowerCase(),
+
+        phone: String(
+            user.phone || ""
+        ).trim(),
+
+        company: String(
+            user.company?.name || ""
+        ).trim(),
+
+        image: String(
+            user.image || ""
+        ).trim(),
+
+        status: "Lead",
+
+        dealValue: randomDealValue,
+
+        notes: [],
+
+        createdAt:
+            new Date().toISOString()
+    };
+}
+
+
+/* =========================================================
+   LOAD CLIENTS FROM API
+========================================================= */
+
+async function fetchClientsFromApi() {
+    const response = await fetch(
+        "https://dummyjson.com/users?limit=30"
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Could not load clients: ${response.status}`
+        );
+    }
+
+    const data = await response.json();
+
+    if (!Array.isArray(data.users)) {
+        throw new Error(
+            "The API returned an invalid clients list."
+        );
+    }
+
+    return data.users.map((user) => {
+        return createClientFromApiUser(user);
+    });
+}
+
+
+/* =========================================================
+   READ STORED CLIENTS
+========================================================= */
+
+function readStoredClients() {
+    const storedClients = localStorage.getItem(
+        CLIENTS_STORAGE_KEY
+    );
+
+    if (storedClients === null) {
+        return null;
+    }
+
+    try {
+        const parsedClients =
+            JSON.parse(storedClients);
+
+        if (!Array.isArray(parsedClients)) {
+            throw new Error(
+                "Stored clients must be an array."
+            );
+        }
+
+        return parsedClients;
+
+    } catch (error) {
+        console.error(
+            "Stored clients data is invalid:",
+            error
+        );
+
+        localStorage.removeItem(
+            CLIENTS_STORAGE_KEY
+        );
+
+        return null;
+    }
+}
+
+
+/* =========================================================
+   LOAD CLIENTS DATA
+========================================================= */
+
+async function loadClientsData() {
+    showClientsLoading();
+
+    try {
+        const storedClients =
+            readStoredClients();
+
+        if (storedClients !== null) {
+            clientsState = storedClients;
+
+            renderClients();
+
+            return;
+        }
+
+        clientsState =
+            await fetchClientsFromApi();
+
+        saveClientsState();
+
+        renderClients();
+
+    } catch (error) {
+        console.error(
+            "Could not load clients:",
+            error
+        );
+
+        showClientsLoadError();
+    }
+}
+
+
+/* =========================================================
+   CREATE NEW CLIENT REQUEST BODY
+========================================================= */
+
+function createClientRequestBody() {
+    const fullName =
+        clientNameInput.value.trim();
+
+    const nameParts =
+        fullName.split(/\s+/);
+
+    const firstName =
+        nameParts.shift() || fullName;
+
+    const lastName =
+        nameParts.join(" ");
+
+    return {
+        firstName,
+
+        lastName,
+
+        email: clientEmailInput.value
+            .trim()
+            .toLowerCase(),
+
+        phone:
+            clientPhoneInput.value.trim(),
+
+        company: {
+            name:
+                clientCompanyInput.value.trim()
+        }
+    };
+}
+
+
+/* =========================================================
+   SEND NEW CLIENT TO API
+========================================================= */
+
+async function postClientToApi(requestBody) {
+    const response = await fetch(
+        "https://dummyjson.com/users/add",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body:
+                JSON.stringify(requestBody)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `Could not add client: ${response.status}`
+        );
+    }
+
+    return response.json();
+}
+
+
+/* =========================================================
+   CREATE CLIENT OBJECT FROM FORM
+========================================================= */
+
+function createClientFromForm(apiClient) {
+    return {
+        id: generateClientId(
+            apiClient?.id
+        ),
+
+        name:
+            clientNameInput.value.trim(),
+
+        email: clientEmailInput.value
+            .trim()
+            .toLowerCase(),
+
+        phone:
+            clientPhoneInput.value.trim(),
+
+        company:
+            clientCompanyInput.value.trim(),
+
+        image: String(
+            apiClient?.image || ""
+        ).trim(),
+
+        status:
+            clientStatusInput.value,
+
+        dealValue: Number(
+            clientDealValueInput.value
+        ),
+
+        notes: [],
+
+        createdAt:
+            new Date().toISOString()
+    };
+}
+
+
+/* =========================================================
+   SUBMIT BUTTON STATE
+========================================================= */
+
+function setClientFormSubmitting(isSubmitting) {
+    isSubmittingClient = isSubmitting;
+
+    const submitButton =
+        clientForm.querySelector(
+            'button[type="submit"]'
+        );
+
+    if (!submitButton) {
+        return;
+    }
+
+    submitButton.disabled = isSubmitting;
+
+    submitButton.textContent = isSubmitting
+        ? "Adding..."
+        : "Add Client";
+}
+
+
+/* =========================================================
+   ADD CLIENT FORM SUBMIT
+========================================================= */
+
+async function handleClientFormSubmit(event) {
     event.preventDefault();
 
-    const isFormValid = validateClientForm();
+    if (isSubmittingClient) {
+        return;
+    }
+
+    const isFormValid =
+        validateClientForm();
 
     if (!isFormValid) {
         return;
     }
 
-    const enteredEmail = clientEmailInput.value
-        .trim()
-        .toLowerCase();
+    setClientFormSubmitting(true);
 
-    const emailAlreadyExists = clientEmailExists(
-        enteredEmail,
-        editingClientId
-    );
+    try {
+        const requestBody =
+            createClientRequestBody();
 
-    if (emailAlreadyExists) {
+        const apiClient =
+            await postClientToApi(
+                requestBody
+            );
+
+        const newClient =
+            createClientFromForm(
+                apiClient
+            );
+
+        clientsState.unshift(newClient);
+
+        saveClientsState();
+
+        renderClients();
+
+        closeAddClientModal();
+
         showToast(
-            "A client with this email already exists"
+            "Client added ✓",
+            "success"
         );
 
-        clientEmailInput.focus();
+    } catch (error) {
+        console.error(
+            "Could not add client:",
+            error
+        );
+
+        showToast(
+            "Could not add client.",
+            "error"
+        );
+
+    } finally {
+        setClientFormSubmitting(false);
+    }
+}
+
+
+/* =========================================================
+   CLIENT NOTES RENDERING
+========================================================= */
+
+function renderClientNotes(client) {
+    clientNotesList.replaceChildren();
+
+    if (
+        !Array.isArray(client.notes) ||
+        client.notes.length === 0
+    ) {
+        const emptyMessage =
+            document.createElement("p");
+
+        emptyMessage.className =
+            "empty-notes-message";
+
+        emptyMessage.textContent =
+            "No notes have been added yet.";
+
+        clientNotesList.append(
+            emptyMessage
+        );
 
         return;
     }
 
-    if (editingClientId !== null) {
-        const clients = getClients();
+    const notesFragment =
+        document.createDocumentFragment();
 
-        const existingClient = clients.find((client) => {
-            return client.id === editingClientId;
+    client.notes
+        .slice()
+        .reverse()
+        .forEach((note) => {
+            const noteItem =
+                document.createElement("li");
+
+            noteItem.className =
+                "client-note-item";
+
+
+            const noteText =
+                document.createElement("p");
+
+            noteText.className =
+                "client-note-text";
+
+            noteText.textContent =
+                note.text;
+
+
+            const noteDate =
+                document.createElement("time");
+
+            noteDate.className =
+                "client-note-date";
+
+            noteDate.textContent =
+                note.date ||
+                "Unknown date";
+
+
+            noteItem.append(
+                noteText,
+                noteDate
+            );
+
+            notesFragment.append(
+                noteItem
+            );
         });
 
-        if (!existingClient) {
-            showToast("Client could not be found");
-
-            return;
-        }
-
-        const updatedClient =
-            createUpdatedClient(existingClient);
-
-        updateClientInStorage(updatedClient);
-
-        showToast("Client updated successfully");
-    } else {
-        const newClient = createClient();
-
-        addClientToStorage(newClient);
-
-        showToast("Client added successfully");
-    }
-
-    displayClients();
-
-    clientForm.reset();
-
-    editingClientId = null;
-
-    closeAddClientModal();
+    clientNotesList.append(
+        notesFragment
+    );
 }
 
 
-/* EVENT LISTENERS */
+/* =========================================================
+   FILL CLIENT DETAILS
+========================================================= */
 
-openAddClientModalButton.addEventListener(
-    "click",
-    openAddClientModal
-);
+function fillClientDetails(client) {
+    detailsClientImage.src =
+        getClientImage(client);
 
-closeAddClientModalButton.addEventListener(
-    "click",
-    closeAddClientModal
-);
+    detailsClientImage.alt =
+        `${client.name} avatar`;
 
-document.addEventListener("keydown", (event) => {
+    clientDetailsTitle.textContent =
+        client.name;
+
+    detailsClientCompany.textContent =
+        client.company || "No company";
+
+    detailsClientEmail.textContent =
+        client.email || "No email";
+
+    detailsClientPhone.textContent =
+        client.phone || "No phone number";
+
+    detailsClientStatus.textContent =
+        client.status || "Lead";
+
+    detailsClientDealValue.textContent =
+        formatDealValue(client.dealValue);
+
+    detailsClientCreatedAt.textContent =
+        formatClientDate(client.createdAt);
+
+    renderClientNotes(client);
+}
+
+
+/* =========================================================
+   OPEN CLIENT DETAILS MODAL
+========================================================= */
+
+function openClientDetails(clientId) {
+    const client =
+        findClientById(clientId);
+
+    if (!client) {
+        showToast(
+            "Client could not be found.",
+            "error"
+        );
+
+        return;
+    }
+
+    selectedClientId = client.id;
+
+    fillClientDetails(client);
+
+    clientNoteInput.value = "";
+
+    clientDetailsModal.classList.remove(
+        "hidden"
+    );
+
+    clientDetailsModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+    document.body.classList.add(
+        "modal-open"
+    );
+
     if (
-        event.key === "Escape" &&
-        !addClientModal.classList.contains("hidden")
+        typeof clientDetailsTitle.focus ===
+        "function"
     ) {
+        clientDetailsTitle.focus();
+    }
+}
+
+
+/* =========================================================
+   REFRESH OPEN DETAILS MODAL
+========================================================= */
+
+function refreshSelectedClientDetails() {
+    if (selectedClientId === null) {
+        return;
+    }
+
+    const selectedClient =
+        findClientById(selectedClientId);
+
+    if (!selectedClient) {
+        closeClientDetailsModal();
+
+        return;
+    }
+
+    fillClientDetails(selectedClient);
+}
+
+
+/* =========================================================
+   ADD CLIENT NOTE
+========================================================= */
+
+function handleAddClientNote() {
+    if (selectedClientId === null) {
+        showToast(
+            "Select a client first.",
+            "error"
+        );
+
+        return;
+    }
+
+    const noteText =
+        clientNoteInput.value.trim();
+
+    if (noteText === "") {
+        showToast(
+            "Note cannot be empty.",
+            "error"
+        );
+
+        clientNoteInput.focus();
+
+        return;
+    }
+
+    const client =
+        findClientById(selectedClientId);
+
+    if (!client) {
+        showToast(
+            "Client could not be found.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (!Array.isArray(client.notes)) {
+        client.notes = [];
+    }
+
+    const newNote = {
+        id: `${Date.now()}-${Math.random()
+            .toString(16)
+            .slice(2)}`,
+
+        text: noteText,
+
+        date:
+            new Date().toLocaleString()
+    };
+
+    client.notes.push(newNote);
+
+    saveClientsState();
+
+    renderClientNotes(client);
+
+    clientNoteInput.value = "";
+
+    clientNoteInput.focus();
+
+    showToast(
+        "Note added ✓",
+        "success"
+    );
+}
+
+
+/* =========================================================
+   CLIENT REMINDER
+========================================================= */
+
+function handleClientReminder() {
+    if (selectedClientId === null) {
+        showToast(
+            "Select a client first.",
+            "error"
+        );
+
+        return;
+    }
+
+    const client =
+        findClientById(selectedClientId);
+
+    if (!client) {
+        showToast(
+            "Client could not be found.",
+            "error"
+        );
+
+        return;
+    }
+
+    const clientName = client.name;
+
+    showToast(
+        "Reminder set for 1 minute ✓",
+        "success"
+    );
+
+    window.setTimeout(() => {
+        showToast(
+            `⏰ Follow up with ${clientName}`,
+            "info"
+        );
+    }, 60000);
+}
+
+
+/* =========================================================
+   FILTER BUTTONS
+========================================================= */
+
+function updateActiveFilterButton(
+    selectedButton
+) {
+    filterButtons.forEach((button) => {
+        const isSelected =
+            button === selectedButton;
+
+        button.classList.toggle(
+            "active",
+            isSelected
+        );
+
+        button.classList.toggle(
+            "filter-button--active",
+            isSelected
+        );
+
+        button.setAttribute(
+            "aria-pressed",
+            String(isSelected)
+        );
+    });
+}
+
+
+function handleFilterButtonClick(event) {
+    const clickedButton =
+        event.currentTarget;
+
+    activeStatus =
+        clickedButton.dataset.status ||
+        clickedButton.textContent.trim();
+
+    updateActiveFilterButton(
+        clickedButton
+    );
+
+    renderClients();
+}
+
+
+/* =========================================================
+   CLOSE MODALS BY OVERLAY CLICK
+========================================================= */
+
+function handleAddModalOverlayClick(event) {
+    if (event.target === addClientModal) {
         closeAddClientModal();
     }
-});
+}
 
-addClientModal.addEventListener(
-    "click",
-    (event) => {
-        if (event.target === addClientModal) {
-            closeAddClientModal();
+
+function handleDetailsModalOverlayClick(event) {
+    if (
+        event.target ===
+        clientDetailsModal
+    ) {
+        closeClientDetailsModal();
+    }
+}
+
+
+/* =========================================================
+   CLOSE MODALS WITH ESCAPE KEY
+========================================================= */
+
+function handleModalEscapeKey(event) {
+    if (event.key !== "Escape") {
+        return;
+    }
+
+    if (
+        !addClientModal.classList.contains(
+            "hidden"
+        )
+    ) {
+        closeAddClientModal();
+
+        return;
+    }
+
+    if (
+        !clientDetailsModal.classList.contains(
+            "hidden"
+        )
+    ) {
+        closeClientDetailsModal();
+    }
+}
+
+
+/* =========================================================
+   NOTE INPUT KEYBOARD SUPPORT
+========================================================= */
+
+function handleNoteInputKeydown(event) {
+    if (
+        event.key === "Enter" &&
+        !event.shiftKey
+    ) {
+        event.preventDefault();
+
+        handleAddClientNote();
+    }
+}
+
+
+/* =========================================================
+   FORM INPUT ERROR CLEARING
+========================================================= */
+
+function addClientInputListeners() {
+    clientNameInput.addEventListener(
+        "input",
+        () => {
+            clearFieldError(
+                clientNameInput,
+                clientNameError
+            );
         }
-    }
-);
-
-clientForm.addEventListener(
-    "input",
-    stopAutoClose
-);
-
-clientEmailInput.addEventListener(
-    "input",
-    () => {
-        clientEmailInput.value =
-            clientEmailInput.value.toLowerCase();
-    }
-);
-
-clientForm.addEventListener(
-    "submit",
-    handleClientSubmit
-);
-
-clientSort.addEventListener(
-    "change",
-    displayClients
-);
-
-clientSearch.addEventListener(
-    "input",
-    displayClients
-);
-
-clientsList.addEventListener(
-    "click",
-    handleClientEdit
-);
-
-clientsList.addEventListener(
-    "click",
-    handleClientDelete
-);
-
-filterButtons.forEach((button) => {
-    button.addEventListener(
-        "click",
-        handleFilterButton
     );
-});
+
+    clientEmailInput.addEventListener(
+        "input",
+        () => {
+            clearFieldError(
+                clientEmailInput,
+                clientEmailError
+            );
+        }
+    );
+
+    clientPhoneInput.addEventListener(
+        "input",
+        () => {
+            clearFieldError(
+                clientPhoneInput,
+                clientPhoneError
+            );
+        }
+    );
+
+    clientDealValueInput.addEventListener(
+        "input",
+        () => {
+            clearFieldError(
+                clientDealValueInput,
+                clientDealValueError
+            );
+        }
+    );
+}
 
 
-/* PAGE INITIALIZATION */
+/* =========================================================
+   EVENT LISTENERS
+========================================================= */
 
-loadClients()
-    .then(() => {
-        displayClients();
-    })
-    .catch(() => {
-        clientsList.innerHTML = `
-            <p>Could not load clients.</p>
-        `;
+function addClientsPageEventListeners() {
+    openAddClientModalButton.addEventListener(
+        "click",
+        openAddClientModal
+    );
+
+    closeAddClientModalButton.addEventListener(
+        "click",
+        closeAddClientModal
+    );
+
+    closeClientDetailsModalButton.addEventListener(
+        "click",
+        closeClientDetailsModal
+    );
+
+    clientForm.addEventListener(
+        "submit",
+        handleClientFormSubmit
+    );
+
+    clientSearchInput.addEventListener(
+        "input",
+        renderClients
+    );
+
+    clientSortSelect.addEventListener(
+        "change",
+        renderClients
+    );
+
+    filterButtons.forEach((button) => {
+        button.addEventListener(
+            "click",
+            handleFilterButtonClick
+        );
     });
+
+    addNoteButton.addEventListener(
+        "click",
+        handleAddClientNote
+    );
+
+    reminderButton.addEventListener(
+        "click",
+        handleClientReminder
+    );
+
+    clientNoteInput.addEventListener(
+        "keydown",
+        handleNoteInputKeydown
+    );
+
+    addClientModal.addEventListener(
+        "click",
+        handleAddModalOverlayClick
+    );
+
+    clientDetailsModal.addEventListener(
+        "click",
+        handleDetailsModalOverlayClick
+    );
+
+    document.addEventListener(
+        "keydown",
+        handleModalEscapeKey
+    );
+
+    addClientInputListeners();
+}
+
+
+/* =========================================================
+   INITIAL ACTIVE FILTER
+========================================================= */
+
+function initializeActiveFilter() {
+    const activeButton = Array.from(
+        filterButtons
+    ).find((button) => {
+        const buttonStatus =
+            button.dataset.status ||
+            button.textContent.trim();
+
+        return buttonStatus === activeStatus;
+    });
+
+    if (activeButton) {
+        updateActiveFilterButton(
+            activeButton
+        );
+    }
+}
+
+
+/* =========================================================
+   REQUIRED ELEMENT CHECK
+========================================================= */
+
+function clientsPageElementsExist() {
+    const requiredElements = [
+        openAddClientModalButton,
+        addClientModal,
+        closeAddClientModalButton,
+        clientForm,
+        clientNameInput,
+        clientEmailInput,
+        clientPhoneInput,
+        clientCompanyInput,
+        clientDealValueInput,
+        clientStatusInput,
+        clientsList,
+        clientSearchInput,
+        clientSortSelect,
+        clientDetailsModal,
+        closeClientDetailsModalButton,
+        detailsClientImage,
+        clientDetailsTitle,
+        detailsClientCompany,
+        detailsClientEmail,
+        detailsClientPhone,
+        detailsClientStatus,
+        detailsClientDealValue,
+        detailsClientCreatedAt,
+        clientNotesList,
+        clientNoteInput,
+        addNoteButton,
+        reminderButton
+    ];
+
+    return requiredElements.every(
+        (element) => element !== null
+    );
+}
+
+
+/* =========================================================
+   INITIALIZE CLIENTS PAGE
+========================================================= */
+
+async function initializeClientsPage() {
+    if (!clientsPageElementsExist()) {
+        console.error(
+            "Clients page could not initialize because one or more required HTML elements are missing."
+        );
+
+        return;
+    }
+
+    initializeActiveFilter();
+
+    addClientsPageEventListeners();
+
+    await loadClientsData();
+}
+
+
+/* =========================================================
+   START CLIENTS PAGE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeClientsPage
+);

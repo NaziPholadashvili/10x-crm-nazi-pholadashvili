@@ -44,71 +44,79 @@ function getUsers() {
 
 /* LOGIN */
 
-loginForm.addEventListener("submit", (event) => {
-    event.preventDefault();
+if (loginForm) {
+    loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
 
-    clearFieldError(emailInput, emailError);
-    clearFieldError(passwordInput, passwordError);
+        clearFieldError(emailInput, emailError);
+        clearFieldError(passwordInput, passwordError);
 
-    formError.textContent = "";
+        formError.textContent = "";
 
-    const email = emailInput.value.trim().toLowerCase();
-    const password = passwordInput.value;
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
 
-    let isFormValid = true;
+        let isFormValid = true;
 
-    if (!isEmailValid(email)) {
-        showFieldError(
-            emailInput,
-            emailError,
-            "Please enter a valid email address"
+        if (!isEmailValid(email)) {
+            showFieldError(
+                emailInput,
+                emailError,
+                "Please enter a valid email address"
+            );
+
+            isFormValid = false;
+        }
+
+        if (password === "") {
+            showFieldError(
+                passwordInput,
+                passwordError,
+                "Password is required"
+            );
+
+            isFormValid = false;
+        }
+
+        if (!isFormValid) {
+            return;
+        }
+
+        const users = getUsers();
+
+        const user = users.find((user) => {
+            return (
+                user.email === email &&
+                user.password === password
+            );
+        });
+
+        if (!user) {
+            formError.textContent =
+                "Invalid email or password.";
+
+            return;
+        }
+
+        const session = {
+            userId: user.id,
+            email: user.email,
+            loginAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem(
+            SESSION_KEY,
+            JSON.stringify(session)
         );
 
-        isFormValid = false;
-    }
-
-    if (password === "") {
-        showFieldError(
-            passwordInput,
-            passwordError,
-            "Password is required"
+        showToast(
+            "Login successful!",
+            "success"
         );
 
-        isFormValid = false;
-    }
-
-    if (!isFormValid) {
-        return;
-    }
-
-    const users = getUsers();
-
-    const user = users.find((user) => {
-        return (
-            user.email === email &&
-            user.password === password
-        );
+        setTimeout(() => {
+            window.location.href =
+                "dashboard.html";
+        }, 1500);
     });
-
-    if (!user) {
-        formError.textContent = "Invalid email or password.";
-        return;
-    }
-
-    const session = {
-        userId: user.id,
-        email: user.email,
-        loginAt: new Date().toISOString(),
-    };
-
-    localStorage.setItem(
-        SESSION_KEY,
-        JSON.stringify(session)
-    );
-
-    showToast("Login successful!", "success");
-
-    setTimeout(() => {
-        window.location.href = "dashboard.html";
-    }, 1500);
-});
+}

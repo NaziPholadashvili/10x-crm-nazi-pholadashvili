@@ -1,4 +1,4 @@
-/* CLIENT DATA */
+/* CLIENT STORAGE CONFIGURATION */
 
 const CLIENTS_KEY = "crm_clients";
 const CLIENTS_API_URL = "https://dummyjson.com/users?limit=30";
@@ -24,7 +24,7 @@ function saveClients(clients) {
 }
 
 
-/* CONVERT API USER TO CRM CLIENT */
+/* CONVERT AN API USER TO A CRM CLIENT */
 
 function createClientFromApiUser(user) {
     return {
@@ -32,7 +32,7 @@ function createClientFromApiUser(user) {
         name: `${user.firstName} ${user.lastName}`,
         email: user.email,
         phone: user.phone,
-        company: user.company.name,
+        company: user.company?.name || "",
         image: user.image,
         status: "Lead",
         dealValue: Math.floor(Math.random() * 9501) + 500,
@@ -63,7 +63,7 @@ async function fetchClientsFromApi() {
 }
 
 
-/* LOAD CLIENTS */
+/* LOAD CLIENTS FROM LOCAL STORAGE OR API */
 
 async function loadClients() {
     const storedClients = localStorage.getItem(CLIENTS_KEY);
@@ -72,24 +72,23 @@ async function loadClients() {
         return JSON.parse(storedClients);
     }
 
-    return await fetchClientsFromApi();
+    return fetchClientsFromApi();
 }
 
 
-/* ADD CLIENT TO LOCAL STORAGE */
+/* ADD A CLIENT TO LOCAL STORAGE */
 
 function addClientToStorage(client) {
     const clients = getClients();
 
     clients.unshift(client);
-
     saveClients(clients);
 
     return clients;
 }
 
 
-/* UPDATE CLIENT IN LOCAL STORAGE */
+/* UPDATE A CLIENT IN LOCAL STORAGE */
 
 function updateClientInStorage(updatedClient) {
     const clients = getClients();
@@ -108,7 +107,7 @@ function updateClientInStorage(updatedClient) {
 }
 
 
-/* REMOVE CLIENT FROM LOCAL STORAGE */
+/* REMOVE A CLIENT FROM LOCAL STORAGE */
 
 function removeClientFromStorage(clientId) {
     const clients = getClients();
@@ -123,10 +122,10 @@ function removeClientFromStorage(clientId) {
 }
 
 
-/* RESET CLIENT DATA */
+/* RESET CLIENTS TO DEFAULT API DATA */
 
 async function resetClients() {
     localStorage.removeItem(CLIENTS_KEY);
 
-    return await fetchClientsFromApi();
+    return fetchClientsFromApi();
 }

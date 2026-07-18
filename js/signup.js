@@ -11,7 +11,9 @@ const confirmPasswordInput = document.querySelector("#confirm-password");
 const fullNameError = document.querySelector("#full-name-error");
 const emailError = document.querySelector("#email-error");
 const passwordError = document.querySelector("#password-error");
-const confirmPasswordError = document.querySelector("#confirm-password-error");
+const confirmPasswordError = document.querySelector(
+    "#confirm-password-error"
+);
 
 const USERS_KEY = "crm_users";
 
@@ -145,38 +147,40 @@ function validateSignupForm() {
 
 /* CREATE ACCOUNT */
 
-signupForm.addEventListener("submit", (event) => {
-    event.preventDefault();
+if (signupForm) {
+    signupForm.addEventListener("submit", (event) => {
+        event.preventDefault();
 
-    const isFormValid = validateSignupForm();
+        const isFormValid = validateSignupForm();
 
-    if (!isFormValid) {
-        return;
-    }
+        if (!isFormValid) {
+            return;
+        }
 
-    const users = getUsers();
+        const users = getUsers();
 
-    const newUser = {
-        id: Date.now(),
-        fullName: fullNameInput.value.trim(),
-        email: emailInput.value.trim().toLowerCase(),
-        password: passwordInput.value,
-        company: companyInput.value.trim(),
-        createdAt: new Date().toISOString(),
-    };
+        const newUser = {
+            id: Date.now(),
+            fullName: fullNameInput.value.trim(),
+            email: emailInput.value.trim().toLowerCase(),
+            password: passwordInput.value,
+            company: companyInput.value.trim(),
+            createdAt: new Date().toISOString(),
+        };
 
-    users.push(newUser);
+        users.push(newUser);
 
-    saveUsers(users);
+        saveUsers(users);
 
-    signupForm.reset();
+        signupForm.reset();
 
-    showToast(
-        "Account created successfully! Please log in.",
-        "success"
-    );
+        showToast(
+            "Account created successfully! Please log in.",
+            "success"
+        );
 
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 1500);
-});
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 1500);
+    });
+}

@@ -1,6 +1,8 @@
 /* AUTH GUARD */
 
-const currentPage = window.location.pathname.split("/").pop() || "index.html";
+const currentPage =
+    window.location.pathname.split("/").pop() ||
+    "index.html";
 
 const publicPages = [
     "index.html",
@@ -13,12 +15,19 @@ const protectedPages = [
     "profile.html",
 ];
 
-const session = localStorage.getItem("crm_session");
+const session =
+    localStorage.getItem("crm_session");
 
-if (!session && protectedPages.includes(currentPage)) {
+if (
+    !session &&
+    protectedPages.includes(currentPage)
+) {
     window.location.href = "index.html";
-}
-
-if (session && publicPages.includes(currentPage)) {
+    return;
+} else if (
+    session &&
+    publicPages.includes(currentPage)
+) {
     window.location.href = "dashboard.html";
+    return;
 }

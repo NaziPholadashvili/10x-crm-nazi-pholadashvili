@@ -68,28 +68,40 @@ const resetCRMDataButton = document.querySelector(
     "#reset-crm-data"
 );
 
+const USERS_KEY = "crm_users";
+
 
 /* STORAGE HELPERS */
 
 function getUsers() {
-    return JSON.parse(
-        localStorage.getItem("crm_users")
-    ) || [];
-}
+    const storedUsers = localStorage.getItem(
+        USERS_KEY
+    );
 
+    if (storedUsers === null) {
+        return [];
+    }
+
+    return JSON.parse(storedUsers);
+}
 
 function saveUsers(users) {
     localStorage.setItem(
-        "crm_users",
+        USERS_KEY,
         JSON.stringify(users)
     );
 }
 
-
 function getSession() {
-    return JSON.parse(
-        localStorage.getItem("crm_session")
+    const storedSession = localStorage.getItem(
+        SESSION_KEY
     );
+
+    if (storedSession === null) {
+        return null;
+    }
+
+    return JSON.parse(storedSession);
 }
 
 
@@ -110,7 +122,7 @@ function getCurrentUser() {
 }
 
 
-/* TOAST HELPER */
+/* PROFILE TOAST */
 
 function displayProfileToast(
     message,
@@ -118,11 +130,10 @@ function displayProfileToast(
 ) {
     if (typeof showToast === "function") {
         showToast(message, type);
-
         return;
     }
 
-    alert(message);
+    window.alert(message);
 }
 
 
@@ -140,7 +151,7 @@ function getUserInitials(fullName) {
     const initials = nameParts
         .slice(0, 2)
         .map((namePart) => {
-            return namePart[0];
+            return namePart.charAt(0);
         })
         .join("");
 
@@ -166,7 +177,7 @@ function formatMemberDate(dateValue) {
         {
             year: "numeric",
             month: "long",
-            day: "numeric"
+            day: "numeric",
         }
     );
 }
@@ -178,63 +189,44 @@ function displayProfile() {
     const currentUser = getCurrentUser();
 
     if (!currentUser) {
+        displayProfileToast(
+            "User account could not be found",
+            "error"
+        );
+
         return;
     }
 
-    if (profileAvatar) {
-        profileAvatar.textContent =
-            getUserInitials(
-                currentUser.fullName
-            );
-    }
+    profileAvatar.textContent = getUserInitials(
+        currentUser.fullName
+    );
 
-    if (profileName) {
-        profileName.textContent =
-            currentUser.fullName;
-    }
+    profileName.textContent = currentUser.fullName;
+    profileEmail.textContent = currentUser.email;
 
-    if (profileEmail) {
-        profileEmail.textContent =
-            currentUser.email;
-    }
+    profileCompany.textContent =
+        currentUser.company || "No company";
 
-    if (profileCompany) {
-        profileCompany.textContent =
-            currentUser.company ||
-            "No company";
-    }
+    memberSince.textContent = formatMemberDate(
+        currentUser.createdAt
+    );
 
-    if (memberSince) {
-        memberSince.textContent =
-            formatMemberDate(
-                currentUser.createdAt
-            );
-    }
+    profileFullNameInput.value =
+        currentUser.fullName;
 
-    if (profileFullNameInput) {
-        profileFullNameInput.value =
-            currentUser.fullName;
-    }
-
-    if (profileCompanyInput) {
-        profileCompanyInput.value =
-            currentUser.company || "";
-    }
+    profileCompanyInput.value =
+        currentUser.company || "";
 }
 
 
 /* CLEAR PROFILE ERRORS */
 
 function clearProfileErrors() {
-    if (profileFullNameError) {
-        profileFullNameError.textContent = "";
-    }
+    profileFullNameError.textContent = "";
 
-    if (profileFullNameInput) {
-        profileFullNameInput.classList.remove(
-            "input-error"
-        );
-    }
+    profileFullNameInput.classList.remove(
+        "input-error"
+    );
 }
 
 
@@ -246,13 +238,15 @@ function validateProfile() {
     const fullName =
         profileFullNameInput.value.trim();
 
-    if (fullName.length < 2) {
+    if (fullName.length < 3) {
         profileFullNameError.textContent =
-            "Full name must contain at least 2 characters";
+            "Full name must contain at least 3 characters";
 
         profileFullNameInput.classList.add(
             "input-error"
         );
+
+        profileFullNameInput.focus();
 
         return false;
     }
@@ -274,6 +268,11 @@ function updateProfile(event) {
     const users = getUsers();
 
     if (!session) {
+        displayProfileToast(
+            "Your session could not be found",
+            "error"
+        );
+
         return;
     }
 
@@ -301,7 +300,8 @@ function updateProfile(event) {
     displayProfile();
 
     displayProfileToast(
-        "Profile updated successfully"
+        "Profile updated successfully",
+        "success"
     );
 }
 
@@ -337,7 +337,7 @@ function isStrongPassword(password) {
         /[a-z]/.test(password);
 
     const hasNumber =
-        /\d/.test(password);
+        /[0-9]/.test(password);
 
     const hasSpecialCharacter =
         /[^A-Za-z0-9]/.test(password);
@@ -357,7 +357,7 @@ function isStrongPassword(password) {
 function validatePasswordForm(currentUser) {
     clearPasswordErrors();
 
-    let isValid = true;
+    let isFormValid = true;
 
     const currentPassword =
         currentPasswordInput.value;
@@ -368,7 +368,7 @@ function validatePasswordForm(currentUser) {
     const confirmNewPassword =
         confirmNewPasswordInput.value;
 
-    if (!currentPassword) {
+    if (currentPassword === "") {
         currentPasswordError.textContent =
             "Current password is required";
 
@@ -376,10 +376,9 @@ function validatePasswordForm(currentUser) {
             "input-error"
         );
 
-        isValid = false;
+        isFormValid = false;
     } else if (
-        currentPassword !==
-        currentUser.password
+        currentPassword !== currentUser.password
     ) {
         currentPasswordError.textContent =
             "Current password is incorrect";
@@ -388,10 +387,10 @@ function validatePasswordForm(currentUser) {
             "input-error"
         );
 
-        isValid = false;
+        isFormValid = false;
     }
 
-    if (!newPassword) {
+    if (newPassword === "") {
         newPasswordError.textContent =
             "New password is required";
 
@@ -399,10 +398,8 @@ function validatePasswordForm(currentUser) {
             "input-error"
         );
 
-        isValid = false;
-    } else if (
-        !isStrongPassword(newPassword)
-    ) {
+        isFormValid = false;
+    } else if (!isStrongPassword(newPassword)) {
         newPasswordError.textContent =
             "Password must be at least 8 characters and include uppercase, lowercase, number, and special character";
 
@@ -410,9 +407,9 @@ function validatePasswordForm(currentUser) {
             "input-error"
         );
 
-        isValid = false;
+        isFormValid = false;
     } else if (
-        newPassword === currentPassword
+        newPassword === currentUser.password
     ) {
         newPasswordError.textContent =
             "New password must be different from the current password";
@@ -421,10 +418,10 @@ function validatePasswordForm(currentUser) {
             "input-error"
         );
 
-        isValid = false;
+        isFormValid = false;
     }
 
-    if (!confirmNewPassword) {
+    if (confirmNewPassword === "") {
         confirmNewPasswordError.textContent =
             "Please confirm your new password";
 
@@ -432,7 +429,7 @@ function validatePasswordForm(currentUser) {
             "input-error"
         );
 
-        isValid = false;
+        isFormValid = false;
     } else if (
         confirmNewPassword !== newPassword
     ) {
@@ -443,10 +440,10 @@ function validatePasswordForm(currentUser) {
             "input-error"
         );
 
-        isValid = false;
+        isFormValid = false;
     }
 
-    return isValid;
+    return isFormValid;
 }
 
 
@@ -458,6 +455,11 @@ function changePassword(event) {
     const currentUser = getCurrentUser();
 
     if (!currentUser) {
+        displayProfileToast(
+            "User account could not be found",
+            "error"
+        );
+
         return;
     }
 
@@ -467,6 +469,15 @@ function changePassword(event) {
 
     const session = getSession();
     const users = getUsers();
+
+    if (!session) {
+        displayProfileToast(
+            "Your session could not be found",
+            "error"
+        );
+
+        return;
+    }
 
     const userIndex = users.findIndex((user) => {
         return user.id === session.userId;
@@ -487,47 +498,19 @@ function changePassword(event) {
     saveUsers(users);
 
     passwordForm.reset();
-
     clearPasswordErrors();
 
     displayProfileToast(
-        "Password changed successfully"
+        "Password changed successfully",
+        "success"
     );
-}
-
-
-/* GET ORIGINAL CLIENT DATA */
-
-function getOriginalClients() {
-    if (
-        typeof initialClients !==
-        "undefined"
-    ) {
-        return initialClients;
-    }
-
-    if (
-        typeof INITIAL_CLIENTS !==
-        "undefined"
-    ) {
-        return INITIAL_CLIENTS;
-    }
-
-    if (
-        typeof clientsData !==
-        "undefined"
-    ) {
-        return clientsData;
-    }
-
-    return [];
 }
 
 
 /* RESET CRM DATA */
 
-function resetCRMData() {
-    const shouldReset = confirm(
+async function resetCRMData() {
+    const shouldReset = window.confirm(
         "Are you sure you want to reset all CRM client data?"
     );
 
@@ -535,39 +518,41 @@ function resetCRMData() {
         return;
     }
 
-    const originalClients =
-        getOriginalClients();
+    resetCRMDataButton.disabled = true;
 
-    localStorage.setItem(
-        "crm_clients",
-        JSON.stringify(originalClients)
-    );
+    try {
+        await resetClients();
 
-    displayProfileToast(
-        "CRM client data reset successfully"
-    );
+        displayProfileToast(
+            "CRM client data reset successfully",
+            "success"
+        );
+    } catch (error) {
+        console.error(error);
+
+        displayProfileToast(
+            "CRM client data could not be reset",
+            "error"
+        );
+    } finally {
+        resetCRMDataButton.disabled = false;
+    }
 }
 
 
 /* EVENT LISTENERS */
 
-if (profileForm) {
+function addProfileEventListeners() {
     profileForm.addEventListener(
         "submit",
         updateProfile
     );
-}
 
-
-if (passwordForm) {
     passwordForm.addEventListener(
         "submit",
         changePassword
     );
-}
 
-
-if (resetCRMDataButton) {
     resetCRMDataButton.addEventListener(
         "click",
         resetCRMData
@@ -577,4 +562,41 @@ if (resetCRMDataButton) {
 
 /* PAGE INITIALIZATION */
 
-displayProfile();
+function initializeProfilePage() {
+    const requiredElements = [
+        profileAvatar,
+        profileName,
+        profileEmail,
+        profileCompany,
+        memberSince,
+        profileForm,
+        profileFullNameInput,
+        profileCompanyInput,
+        profileFullNameError,
+        passwordForm,
+        currentPasswordInput,
+        newPasswordInput,
+        confirmNewPasswordInput,
+        currentPasswordError,
+        newPasswordError,
+        confirmNewPasswordError,
+        resetCRMDataButton,
+    ];
+
+    const hasMissingElement = requiredElements.some(
+        (element) => element === null
+    );
+
+    if (hasMissingElement) {
+        console.error(
+            "Profile page could not be initialized because one or more required elements are missing."
+        );
+
+        return;
+    }
+
+    addProfileEventListeners();
+    displayProfile();
+}
+
+initializeProfilePage();

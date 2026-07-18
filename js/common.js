@@ -3,47 +3,52 @@
 const THEME_KEY = "crm_theme";
 const SESSION_KEY = "crm_session";
 
-let toastTimer;
+let toastTimer = null;
 
 
 /* THEME */
 
 function updateThemeButton(theme) {
-    const themeToggleButton = document.querySelector("#theme-toggle");
+    const themeToggleButton =
+        document.querySelector("#theme-toggle");
 
     if (!themeToggleButton) {
         return;
     }
 
-    if (theme === "light") {
-        themeToggleButton.textContent = "Dark Theme";
-    } else {
-        themeToggleButton.textContent = "Light Theme";
-    }
+    const isLightTheme = theme === "light";
+
+    themeToggleButton.textContent = isLightTheme
+        ? "Dark Theme"
+        : "Light Theme";
+
+    themeToggleButton.setAttribute(
+        "aria-label",
+        isLightTheme
+            ? "Switch to dark theme"
+            : "Switch to light theme"
+    );
 }
 
 function applySavedTheme() {
-    const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
+    const savedTheme =
+        localStorage.getItem(THEME_KEY) || "dark";
 
-    if (savedTheme === "light") {
-        document.body.classList.add("light-theme");
-    } else {
-        document.body.classList.remove("light-theme");
-    }
+    document.body.classList.toggle(
+        "light-theme",
+        savedTheme === "light"
+    );
 
     updateThemeButton(savedTheme);
 }
 
 function toggleTheme() {
-    const isLightTheme = document.body.classList.toggle("light-theme");
+    const isLightTheme =
+        document.body.classList.toggle("light-theme");
 
-    let selectedTheme;
-
-    if (isLightTheme) {
-        selectedTheme = "light";
-    } else {
-        selectedTheme = "dark";
-    }
+    const selectedTheme = isLightTheme
+        ? "light"
+        : "dark";
 
     localStorage.setItem(THEME_KEY, selectedTheme);
 
@@ -60,15 +65,30 @@ function showToast(message, type = "success") {
         return;
     }
 
+    const allowedTypes = ["success", "error"];
+
+    const toastType = allowedTypes.includes(type)
+        ? type
+        : "success";
+
     clearTimeout(toastTimer);
 
     toast.textContent = message;
 
-    toast.classList.remove("success", "error");
-    toast.classList.add(type, "show");
+    toast.classList.remove(
+        "success",
+        "error",
+        "show"
+    );
+
+    toast.classList.add(toastType, "show");
 
     toastTimer = setTimeout(() => {
-        toast.classList.remove("show", "success", "error");
+        toast.classList.remove(
+            "show",
+            "success",
+            "error"
+        );
     }, 3000);
 }
 
@@ -86,12 +106,14 @@ function logout() {
 
 function togglePasswordVisibility(event) {
     const toggleButton = event.currentTarget;
-
     const targetInputId = toggleButton.dataset.target;
 
-    const passwordInput = document.querySelector(
-        `#${targetInputId}`
-    );
+    if (!targetInputId) {
+        return;
+    }
+
+    const passwordInput =
+        document.getElementById(targetInputId);
 
     if (!passwordInput) {
         return;
@@ -103,45 +125,75 @@ function togglePasswordVisibility(event) {
     if (isPasswordHidden) {
         passwordInput.type = "text";
         toggleButton.textContent = "🙈";
+
         toggleButton.setAttribute(
             "aria-label",
             "Hide password"
         );
+
+        toggleButton.setAttribute(
+            "aria-pressed",
+            "true"
+        );
     } else {
         passwordInput.type = "password";
         toggleButton.textContent = "👁";
+
         toggleButton.setAttribute(
             "aria-label",
             "Show password"
+        );
+
+        toggleButton.setAttribute(
+            "aria-pressed",
+            "false"
         );
     }
 }
 
 
-/* EVENT LISTENERS */
-
-const themeToggleButton = document.querySelector("#theme-toggle");
-const logoutButton = document.querySelector("#logout-button");
-
-const passwordToggleButtons =
-    document.querySelectorAll(".password-toggle");
-
-if (themeToggleButton) {
-    themeToggleButton.addEventListener("click", toggleTheme);
-}
-
-if (logoutButton) {
-    logoutButton.addEventListener("click", logout);
-}
-
-passwordToggleButtons.forEach((button) => {
-    button.addEventListener(
-        "click",
-        togglePasswordVisibility
-    );
-});
-
-
 /* PAGE INITIALIZATION */
 
-applySavedTheme();
+function initializeCommon() {
+    applySavedTheme();
+
+    const themeToggleButton =
+        document.querySelector("#theme-toggle");
+
+    const logoutButton =
+        document.querySelector("#logout-button");
+
+    const passwordToggleButtons =
+        document.querySelectorAll(".password-toggle");
+
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener(
+            "click",
+            toggleTheme
+        );
+    }
+
+    if (logoutButton) {
+        logoutButton.addEventListener(
+            "click",
+            logout
+        );
+    }
+
+    passwordToggleButtons.forEach((button) => {
+        button.addEventListener(
+            "click",
+            togglePasswordVisibility
+        );
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeCommon,
+        { once: true }
+    );
+} else {
+    initializeCommon();
+}
