@@ -24,6 +24,22 @@ const newThisWeekElement = document.querySelector(
     "#new-this-week"
 );
 
+const pipelineLeadElement = document.querySelector(
+    "#pipeline-lead"
+);
+
+const pipelineContactedElement = document.querySelector(
+    "#pipeline-contacted"
+);
+
+const pipelineWonElement = document.querySelector(
+    "#pipeline-won"
+);
+
+const pipelineLostElement = document.querySelector(
+    "#pipeline-lost"
+);
+
 const exportClientsButton = document.querySelector(
     "#export-clients-button"
 );
@@ -180,6 +196,49 @@ function displayNewThisWeek() {
 }
 
 
+/* PIPELINE OVERVIEW */
+
+function displayPipelineOverview() {
+    const clients = getClients();
+
+    const leadClients = clients.filter((client) => {
+        return client.status === "Lead";
+    });
+
+    const contactedClients = clients.filter((client) => {
+        return client.status === "Contacted";
+    });
+
+    const wonClients = clients.filter((client) => {
+        return client.status === "Won";
+    });
+
+    const lostClients = clients.filter((client) => {
+        return client.status === "Lost";
+    });
+
+    if (pipelineLeadElement) {
+        pipelineLeadElement.textContent =
+            leadClients.length;
+    }
+
+    if (pipelineContactedElement) {
+        pipelineContactedElement.textContent =
+            contactedClients.length;
+    }
+
+    if (pipelineWonElement) {
+        pipelineWonElement.textContent =
+            wonClients.length;
+    }
+
+    if (pipelineLostElement) {
+        pipelineLostElement.textContent =
+            lostClients.length;
+    }
+}
+
+
 /* ESCAPE CSV VALUE */
 
 function escapeCSVValue(value) {
@@ -323,3 +382,5 @@ displayActiveDeals();
 displayWonRevenue();
 
 displayNewThisWeek();
+
+displayPipelineOverview();
