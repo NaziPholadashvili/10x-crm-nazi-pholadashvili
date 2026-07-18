@@ -1,32 +1,58 @@
 /* CLIENT STORAGE CONFIGURATION */
 
 const CLIENTS_KEY = "crm_clients";
-const CLIENTS_API_URL = "https://dummyjson.com/users?limit=30";
+
+const CLIENTS_API_URL =
+    "https://dummyjson.com/users?limit=30";
 
 
 /* GET CLIENTS FROM LOCAL STORAGE */
 
 function getClients() {
-    const storedClients = localStorage.getItem(CLIENTS_KEY);
+    const storedClients =
+        localStorage.getItem(CLIENTS_KEY);
 
     if (storedClients === null) {
         return [];
     }
 
-    return JSON.parse(storedClients);
+    try {
+        return JSON.parse(storedClients);
+    } catch (error) {
+        console.error(
+            "Stored client data is invalid:",
+            error
+        );
+
+        localStorage.removeItem(CLIENTS_KEY);
+
+        return [];
+    }
 }
 
 
 /* SAVE CLIENTS TO LOCAL STORAGE */
 
 function saveClients(clients) {
-    localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
+    localStorage.setItem(
+        CLIENTS_KEY,
+        JSON.stringify(clients)
+    );
 }
 
 
 /* CONVERT AN API USER TO A CRM CLIENT */
 
 function createClientFromApiUser(user) {
+    const randomDaysAgo =
+        Math.floor(Math.random() * 60);
+
+    const createdDate = new Date();
+
+    createdDate.setDate(
+        createdDate.getDate() - randomDaysAgo
+    );
+
     return {
         id: user.id,
         name: `${user.firstName} ${user.lastName}`,
@@ -35,9 +61,10 @@ function createClientFromApiUser(user) {
         company: user.company?.name || "",
         image: user.image,
         status: "Lead",
-        dealValue: Math.floor(Math.random() * 9501) + 500,
+        dealValue:
+            Math.floor(Math.random() * 9501) + 500,
         notes: [],
-        createdAt: new Date().toISOString(),
+        createdAt: createdDate.toISOString(),
     };
 }
 
@@ -45,10 +72,14 @@ function createClientFromApiUser(user) {
 /* FETCH CLIENTS FROM DUMMYJSON */
 
 async function fetchClientsFromApi() {
-    const response = await fetch(CLIENTS_API_URL);
+    const response = await fetch(
+        CLIENTS_API_URL
+    );
 
     if (!response.ok) {
-        throw new Error("Could not load clients");
+        throw new Error(
+            "Could not load clients"
+        );
     }
 
     const data = await response.json();
@@ -66,10 +97,10 @@ async function fetchClientsFromApi() {
 /* LOAD CLIENTS FROM LOCAL STORAGE OR API */
 
 async function loadClients() {
-    const storedClients = localStorage.getItem(CLIENTS_KEY);
+    const clients = getClients();
 
-    if (storedClients !== null) {
-        return JSON.parse(storedClients);
+    if (clients.length > 0) {
+        return clients;
     }
 
     return fetchClientsFromApi();
@@ -82,6 +113,7 @@ function addClientToStorage(client) {
     const clients = getClients();
 
     clients.unshift(client);
+
     saveClients(clients);
 
     return clients;
@@ -93,13 +125,17 @@ function addClientToStorage(client) {
 function updateClientInStorage(updatedClient) {
     const clients = getClients();
 
-    const updatedClients = clients.map((client) => {
-        if (client.id === updatedClient.id) {
-            return updatedClient;
-        }
+    const updatedClients = clients.map(
+        (client) => {
+            if (
+                client.id === updatedClient.id
+            ) {
+                return updatedClient;
+            }
 
-        return client;
-    });
+            return client;
+        }
+    );
 
     saveClients(updatedClients);
 
@@ -109,12 +145,15 @@ function updateClientInStorage(updatedClient) {
 
 /* REMOVE A CLIENT FROM LOCAL STORAGE */
 
-function removeClientFromStorage(clientId) {
+function removeClientFromStorage(
+    clientId
+) {
     const clients = getClients();
 
-    const updatedClients = clients.filter((client) => {
-        return client.id !== clientId;
-    });
+    const updatedClients =
+        clients.filter((client) => {
+            return client.id !== clientId;
+        });
 
     saveClients(updatedClients);
 
@@ -122,7 +161,7 @@ function removeClientFromStorage(clientId) {
 }
 
 
-/* RESET CLIENTS TO DEFAULT API DATA */
+/* RELOAD CLIENTS FROM THE API */
 
 async function resetClients() {
     localStorage.removeItem(CLIENTS_KEY);

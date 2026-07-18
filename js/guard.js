@@ -23,11 +23,9 @@ if (
     protectedPages.includes(currentPage)
 ) {
     window.location.href = "index.html";
-    return;
 } else if (
     session &&
     publicPages.includes(currentPage)
 ) {
     window.location.href = "dashboard.html";
-    return;
 }

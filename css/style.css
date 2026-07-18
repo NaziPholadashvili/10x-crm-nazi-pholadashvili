@@ -343,6 +343,9 @@ textarea {
     border-left: 5px solid var(--error-color);
 }
 
+.toast.info {
+    border-left: 5px solid #3b82f6;
+}
 
 /* HEADER */
 

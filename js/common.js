@@ -65,7 +65,11 @@ function showToast(message, type = "success") {
         return;
     }
 
-    const allowedTypes = ["success", "error"];
+    const allowedTypes = [
+        "success",
+        "error",
+        "info"
+    ];
 
     const toastType = allowedTypes.includes(type)
         ? type
@@ -78,6 +82,7 @@ function showToast(message, type = "success") {
     toast.classList.remove(
         "success",
         "error",
+        "info",
         "show"
     );
 
@@ -87,7 +92,8 @@ function showToast(message, type = "success") {
         toast.classList.remove(
             "show",
             "success",
-            "error"
+            "error",
+            "info"
         );
     }, 3000);
 }

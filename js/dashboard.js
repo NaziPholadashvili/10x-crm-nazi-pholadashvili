@@ -1,6 +1,8 @@
 /* DASHBOARD ELEMENTS */
 
-const liveClock = document.querySelector("#live-clock");
+const liveClock = document.querySelector(
+    "#live-clock"
+);
 
 const welcomeMessage = document.querySelector(
     "#welcome-message"
@@ -56,22 +58,21 @@ function updateClock() {
 
     const currentDate = new Date();
 
-    liveClock.textContent = currentDate.toLocaleString();
+    liveClock.textContent =
+        currentDate.toLocaleString();
 }
 
 
 /* CURRENT USER */
 
 function getCurrentUser() {
-    const storedSession = localStorage.getItem(
-        SESSION_KEY
+    const session = JSON.parse(
+        localStorage.getItem(SESSION_KEY)
     );
 
-    if (storedSession === null) {
+    if (!session) {
         return null;
     }
-
-    const session = JSON.parse(storedSession);
 
     const users = JSON.parse(
         localStorage.getItem("crm_users")
@@ -79,7 +80,7 @@ function getCurrentUser() {
 
     return users.find((user) => {
         return user.id === session.userId;
-    }) || null;
+    });
 }
 
 
@@ -93,12 +94,20 @@ function displayWelcomeMessage() {
     const currentUser = getCurrentUser();
 
     if (!currentUser) {
-        welcomeMessage.textContent = "Welcome back!";
         return;
     }
 
     welcomeMessage.textContent =
         `Welcome back, ${currentUser.fullName}!`;
+}
+
+
+/* CLIENTS */
+
+function getClients() {
+    return JSON.parse(
+        localStorage.getItem("crm_clients")
+    ) || [];
 }
 
 
@@ -111,7 +120,8 @@ function displayTotalClients() {
 
     const clients = getClients();
 
-    totalClientsElement.textContent = clients.length;
+    totalClientsElement.textContent =
+        clients.length;
 }
 
 
@@ -131,7 +141,8 @@ function displayActiveDeals() {
         );
     });
 
-    activeDealsElement.textContent = activeDeals.length;
+    activeDealsElement.textContent =
+        activeDeals.length;
 }
 
 
@@ -149,7 +160,10 @@ function displayWonRevenue() {
             return client.status === "Won";
         })
         .reduce((total, client) => {
-            return total + Number(client.dealValue || 0);
+            return (
+                total +
+                Number(client.dealValue || 0)
+            );
         }, 0);
 
     wonRevenueElement.textContent =
@@ -167,6 +181,7 @@ function displayNewThisWeek() {
     const clients = getClients();
 
     const currentDate = new Date();
+
     const sevenDaysAgo = new Date();
 
     sevenDaysAgo.setDate(
@@ -174,9 +189,8 @@ function displayNewThisWeek() {
     );
 
     const newClients = clients.filter((client) => {
-        const clientCreatedDate = new Date(
-            client.createdAt
-        );
+        const clientCreatedDate =
+            new Date(client.createdAt);
 
         return (
             clientCreatedDate >= sevenDaysAgo &&
@@ -194,86 +208,41 @@ function displayNewThisWeek() {
 function displayPipelineOverview() {
     const clients = getClients();
 
-    const pipelineCounts = clients.reduce(
-        (counts, client) => {
-            if (client.status === "Lead") {
-                counts.lead++;
-            } else if (client.status === "Contacted") {
-                counts.contacted++;
-            } else if (client.status === "Won") {
-                counts.won++;
-            } else if (client.status === "Lost") {
-                counts.lost++;
-            }
+    const leadClients = clients.filter((client) => {
+        return client.status === "Lead";
+    });
 
-            return counts;
-        },
-        {
-            lead: 0,
-            contacted: 0,
-            won: 0,
-            lost: 0,
-        }
-    );
+    const contactedClients = clients.filter((client) => {
+        return client.status === "Contacted";
+    });
+
+    const wonClients = clients.filter((client) => {
+        return client.status === "Won";
+    });
+
+    const lostClients = clients.filter((client) => {
+        return client.status === "Lost";
+    });
 
     if (pipelineLeadElement) {
         pipelineLeadElement.textContent =
-            pipelineCounts.lead;
+            leadClients.length;
     }
 
     if (pipelineContactedElement) {
         pipelineContactedElement.textContent =
-            pipelineCounts.contacted;
+            contactedClients.length;
     }
 
     if (pipelineWonElement) {
         pipelineWonElement.textContent =
-            pipelineCounts.won;
+            wonClients.length;
     }
 
     if (pipelineLostElement) {
         pipelineLostElement.textContent =
-            pipelineCounts.lost;
+            lostClients.length;
     }
-}
-
-
-/* RECENT CLIENT CARD */
-
-function createRecentClientCard(client) {
-    const card = document.createElement("article");
-    const name = document.createElement("h3");
-    const company = document.createElement("p");
-    const dealValue = document.createElement("strong");
-    const status = document.createElement("span");
-
-    card.classList.add("recent-client-card");
-    name.classList.add("recent-client-name");
-    company.classList.add("recent-client-company");
-    dealValue.classList.add("recent-client-value");
-    status.classList.add("recent-client-status");
-
-    const clientDealValue = Number(
-        client.dealValue || 0
-    );
-
-    name.textContent = client.name;
-    company.textContent =
-        client.company || "No company";
-
-    dealValue.textContent =
-        `$${clientDealValue.toLocaleString()}`;
-
-    status.textContent = client.status;
-
-    card.append(
-        name,
-        company,
-        dealValue,
-        status
-    );
-
-    return card;
 }
 
 
@@ -287,41 +256,60 @@ function displayRecentClients() {
     const clients = getClients();
 
     const recentClients = [...clients]
-        .sort((firstClient, secondClient) => {
+        .sort((a, b) => {
             return (
-                new Date(secondClient.createdAt) -
-                new Date(firstClient.createdAt)
+                new Date(b.createdAt) -
+                new Date(a.createdAt)
             );
         })
-        .slice(0, 4);
-
-    recentClientsList.replaceChildren();
+        .slice(0, 5);
 
     if (recentClients.length === 0) {
-        const emptyMessage =
-            document.createElement("p");
-
-        emptyMessage.textContent =
-            "No clients added yet.";
-
-        recentClientsList.append(emptyMessage);
+        recentClientsList.innerHTML = `
+            <p>No clients added yet.</p>
+        `;
 
         return;
     }
 
-    recentClients.forEach((client) => {
-        const clientCard =
-            createRecentClientCard(client);
+    recentClientsList.innerHTML = recentClients
+        .map((client) => {
+            const dealValue = Number(
+                client.dealValue || 0
+            );
 
-        recentClientsList.append(clientCard);
-    });
+            return `
+                <article class="recent-client-card">
+
+                    <h3 class="recent-client-name">
+                        ${client.name}
+                    </h3>
+
+                    <p class="recent-client-company">
+                        ${client.company || "No company"}
+                    </p>
+
+                    <strong class="recent-client-value">
+                        $${dealValue.toLocaleString()}
+                    </strong>
+
+                    <span class="recent-client-status">
+                        ${client.status}
+                    </span>
+
+                </article>
+            `;
+        })
+        .join("");
 }
 
 
 /* ESCAPE CSV VALUE */
 
 function escapeCSVValue(value) {
-    const stringValue = String(value ?? "");
+    const stringValue = String(
+        value ?? ""
+    );
 
     const escapedValue = stringValue.replace(
         /"/g,
@@ -343,7 +331,7 @@ function createClientsCSV(clients) {
         "Company",
         "Status",
         "Deal Value",
-        "Created At",
+        "Created At"
     ];
 
     const rows = clients.map((client) => {
@@ -355,7 +343,7 @@ function createClientsCSV(clients) {
             client.company || "",
             client.status,
             client.dealValue,
-            client.createdAt,
+            client.createdAt
         ]
             .map(escapeCSVValue)
             .join(",");
@@ -365,7 +353,10 @@ function createClientsCSV(clients) {
         .map(escapeCSVValue)
         .join(",");
 
-    return [headerRow, ...rows].join("\n");
+    return [
+        headerRow,
+        ...rows
+    ].join("\n");
 }
 
 
@@ -376,14 +367,13 @@ function exportClients() {
 
     if (clients.length === 0) {
         showToast(
-            "There are no clients to export",
-            "error"
+            "There are no clients to export"
         );
 
         return;
     }
 
-    const shouldExport = window.confirm(
+    const shouldExport = confirm(
         "Are you sure you want to export all client data?"
     );
 
@@ -391,12 +381,13 @@ function exportClients() {
         return;
     }
 
-    const csvContent = createClientsCSV(clients);
+    const csvContent =
+        createClientsCSV(clients);
 
     const csvBlob = new Blob(
         [csvContent],
         {
-            type: "text/csv;charset=utf-8;",
+            type: "text/csv;charset=utf-8;"
         }
     );
 
@@ -415,62 +406,48 @@ function exportClients() {
     downloadLink.download =
         `crm-clients-${currentDate}.csv`;
 
-    document.body.append(downloadLink);
+    document.body.appendChild(
+        downloadLink
+    );
 
     downloadLink.click();
+
     downloadLink.remove();
 
     URL.revokeObjectURL(downloadURL);
 
     showToast(
-        "Client data exported successfully",
-        "success"
+        "Client data exported successfully"
     );
 }
 
 
-/* DASHBOARD DISPLAY */
+/* EVENT LISTENERS */
 
-function displayDashboardData() {
-    displayTotalClients();
-    displayActiveDeals();
-    displayWonRevenue();
-    displayNewThisWeek();
-    displayPipelineOverview();
-    displayRecentClients();
+if (exportClientsButton) {
+    exportClientsButton.addEventListener(
+        "click",
+        exportClients
+    );
 }
 
 
 /* PAGE INITIALIZATION */
 
-async function initializeDashboard() {
-    displayWelcomeMessage();
+updateClock();
 
-    if (liveClock) {
-        updateClock();
-        setInterval(updateClock, 1000);
-    }
+setInterval(updateClock, 1000);
 
-    try {
-        await loadClients();
-        displayDashboardData();
-    } catch (error) {
-        console.error(error);
+displayWelcomeMessage();
 
-        showToast(
-            "Could not load dashboard data",
-            "error"
-        );
+displayTotalClients();
 
-        displayDashboardData();
-    }
+displayActiveDeals();
 
-    if (exportClientsButton) {
-        exportClientsButton.addEventListener(
-            "click",
-            exportClients
-        );
-    }
-}
+displayWonRevenue();
 
-initializeDashboard();
+displayNewThisWeek();
+
+displayPipelineOverview();
+
+displayRecentClients();
