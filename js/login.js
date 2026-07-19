@@ -24,13 +24,6 @@ function clearFieldError(input, errorElement) {
     errorElement.textContent = "";
 }
 
-function isEmailValid(email) {
-    const atIndex = email.indexOf("@");
-    const dotIndex = email.indexOf(".", atIndex);
-
-    return atIndex > 0 && dotIndex > atIndex + 1;
-}
-
 function getUsers() {
     const storedUsers = localStorage.getItem(USERS_KEY);
 
@@ -58,11 +51,11 @@ if (loginForm) {
 
         let isFormValid = true;
 
-        if (!isEmailValid(email)) {
+        if (email === "") {
             showFieldError(
                 emailInput,
                 emailError,
-                "Please enter a valid email address"
+                "Email is required"
             );
 
             isFormValid = false;
@@ -93,7 +86,7 @@ if (loginForm) {
 
         if (!user) {
             formError.textContent =
-                "Invalid email or password.";
+                "Invalid email or password";
 
             return;
         }

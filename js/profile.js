@@ -240,7 +240,7 @@ function validateProfile() {
 
     if (fullName.length < 3) {
         profileFullNameError.textContent =
-            "Full name must contain at least 3 characters";
+            "Full name must be at least 3 characters";
 
         profileFullNameInput.classList.add(
             "input-error"
@@ -423,7 +423,7 @@ function validatePasswordForm(currentUser) {
 
     if (confirmNewPassword === "") {
         confirmNewPasswordError.textContent =
-            "Please confirm your new password";
+            "Confirm new password";
 
         confirmNewPasswordInput.classList.add(
             "input-error"

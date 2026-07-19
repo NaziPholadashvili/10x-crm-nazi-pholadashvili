@@ -97,17 +97,12 @@ function displayWelcomeMessage() {
         return;
     }
 
+    const firstName = currentUser.fullName
+        .trim()
+        .split(/\s+/)[0];
+
     welcomeMessage.textContent =
-        `Welcome back, ${currentUser.fullName}!`;
-}
-
-
-/* CLIENTS */
-
-function getClients() {
-    return JSON.parse(
-        localStorage.getItem("crm_clients")
-    ) || [];
+        `Welcome back, ${firstName}!`;
 }
 
 
@@ -206,6 +201,15 @@ function displayNewThisWeek() {
 /* PIPELINE OVERVIEW */
 
 function displayPipelineOverview() {
+    if (
+        !pipelineLeadElement ||
+        !pipelineContactedElement ||
+        !pipelineWonElement ||
+        !pipelineLostElement
+    ) {
+        return;
+    }
+
     const clients = getClients();
 
     const leadClients = clients.filter((client) => {
@@ -224,27 +228,18 @@ function displayPipelineOverview() {
         return client.status === "Lost";
     });
 
-    if (pipelineLeadElement) {
-        pipelineLeadElement.textContent =
-            leadClients.length;
-    }
+    pipelineLeadElement.textContent =
+        leadClients.length;
 
-    if (pipelineContactedElement) {
-        pipelineContactedElement.textContent =
-            contactedClients.length;
-    }
+    pipelineContactedElement.textContent =
+        contactedClients.length;
 
-    if (pipelineWonElement) {
-        pipelineWonElement.textContent =
-            wonClients.length;
-    }
+    pipelineWonElement.textContent =
+        wonClients.length;
 
-    if (pipelineLostElement) {
-        pipelineLostElement.textContent =
-            lostClients.length;
-    }
+    pipelineLostElement.textContent =
+        lostClients.length;
 }
-
 
 /* RECENT CLIENTS */
 
@@ -258,49 +253,116 @@ function displayRecentClients() {
     const recentClients = [...clients]
         .sort((a, b) => {
             return (
-                new Date(b.createdAt) -
-                new Date(a.createdAt)
+                new Date(b.createdAt).getTime() -
+                new Date(a.createdAt).getTime()
             );
         })
         .slice(0, 5);
 
+    recentClientsList.replaceChildren();
+
     if (recentClients.length === 0) {
-        recentClientsList.innerHTML = `
-            <p>No clients added yet.</p>
-        `;
+        const emptyMessage =
+            document.createElement("p");
+
+        emptyMessage.textContent =
+            "No clients added yet.";
+
+        recentClientsList.append(
+            emptyMessage
+        );
 
         return;
     }
 
-    recentClientsList.innerHTML = recentClients
-        .map((client) => {
-            const dealValue = Number(
-                client.dealValue || 0
-            );
+    const clientsFragment =
+        document.createDocumentFragment();
 
-            return `
-                <article class="recent-client-card">
+    recentClients.forEach((client) => {
+        const dealValue = Number(
+            client.dealValue || 0
+        );
 
-                    <h3 class="recent-client-name">
-                        ${client.name}
-                    </h3>
+        const createdDate = new Date(
+            client.createdAt
+        ).toLocaleDateString();
 
-                    <p class="recent-client-company">
-                        ${client.company || "No company"}
-                    </p>
+        const statusClass = String(
+            client.status || ""
+        )
+            .trim()
+            .toLowerCase();
 
-                    <strong class="recent-client-value">
-                        $${dealValue.toLocaleString()}
-                    </strong>
+        const clientCard =
+            document.createElement("article");
 
-                    <span class="recent-client-status">
-                        ${client.status}
-                    </span>
+        clientCard.className =
+            "recent-client-card";
 
-                </article>
-            `;
-        })
-        .join("");
+        const clientName =
+            document.createElement("h3");
+
+        clientName.className =
+            "recent-client-name";
+
+        clientName.textContent =
+            client.name;
+
+        const clientCompany =
+            document.createElement("p");
+
+        clientCompany.className =
+            "recent-client-company";
+
+        clientCompany.textContent =
+            client.company || "No company";
+
+        const clientValue =
+            document.createElement("strong");
+
+        clientValue.className =
+            "recent-client-value";
+
+        clientValue.textContent =
+            `$${dealValue.toLocaleString()}`;
+
+        const clientStatus =
+            document.createElement("span");
+
+        clientStatus.className =
+            `recent-client-status status-${statusClass}`;
+
+        clientStatus.textContent =
+            client.status;
+
+        const clientDate =
+            document.createElement("time");
+
+        clientDate.className =
+            "recent-client-date";
+
+        clientDate.dateTime =
+            client.createdAt;
+
+        clientDate.textContent =
+            createdDate;
+
+        clientCard.append(
+            clientName,
+            clientCompany,
+            clientValue,
+            clientStatus,
+            clientDate
+        );
+
+        clientsFragment.append(
+            clientCard
+        );
+    });
+
+    recentClientsList.append(
+        clientsFragment
+    );
 }
 
 
@@ -367,13 +429,14 @@ function exportClients() {
 
     if (clients.length === 0) {
         showToast(
-            "There are no clients to export"
+            "There are no clients to export",
+            "info"
         );
 
         return;
     }
 
-    const shouldExport = confirm(
+    const shouldExport = window.confirm(
         "Are you sure you want to export all client data?"
     );
 
@@ -417,7 +480,8 @@ function exportClients() {
     URL.revokeObjectURL(downloadURL);
 
     showToast(
-        "Client data exported successfully"
+        "Client data exported successfully",
+        "success"
     );
 }
 
@@ -434,20 +498,36 @@ if (exportClientsButton) {
 
 /* PAGE INITIALIZATION */
 
-updateClock();
+async function initializeDashboard() {
+    updateClock();
 
-setInterval(updateClock, 1000);
+    window.setInterval(
+        updateClock,
+        1000
+    );
 
-displayWelcomeMessage();
+    displayWelcomeMessage();
 
-displayTotalClients();
+    try {
+        await loadClients();
 
-displayActiveDeals();
+        displayTotalClients();
+        displayActiveDeals();
+        displayWonRevenue();
+        displayNewThisWeek();
+        displayPipelineOverview();
+        displayRecentClients();
+    } catch (error) {
+        console.error(
+            "Dashboard data could not be loaded:",
+            error
+        );
 
-displayWonRevenue();
+        showToast(
+            "Could not load dashboard data.",
+            "error"
+        );
+    }
+}
 
-displayNewThisWeek();
-
-displayPipelineOverview();
-
-displayRecentClients();
+initializeDashboard();

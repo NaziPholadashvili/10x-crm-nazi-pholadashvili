@@ -583,6 +583,15 @@ function getVisibleClients() {
             });
             break;
 
+        case "oldest":
+            visibleClients.sort((a, b) => {
+                return (
+                    new Date(a.createdAt).getTime() -
+                    new Date(b.createdAt).getTime()
+                );
+            });
+            break;
+
         case "newest":
         default:
             visibleClients.sort((a, b) => {
@@ -591,11 +600,43 @@ function getVisibleClients() {
                     new Date(a.createdAt).getTime()
                 );
             });
+            break;
     }
 
     return visibleClients;
 }
 
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+function getStatusClass(status) {
+    switch (status) {
+        case "Contacted":
+            return "status-contacted";
+
+        case "Won":
+            return "status-won";
+
+        case "Lost":
+            return "status-lost";
+
+        case "Lead":
+        default:
+            return "status-lead";
+    }
+}
+
+function createStatusBadge(client) {
+    const badge = document.createElement("span");
+
+    badge.className =
+        `status-badge ${getStatusClass(client.status)}`;
+
+    badge.textContent = client.status;
+
+    return badge;
+}
 
 /* =========================================================
    STATUS SELECT
@@ -604,7 +645,8 @@ function getVisibleClients() {
 function createStatusSelect(client) {
     const select = document.createElement("select");
 
-    select.className = "client-status-select";
+    select.className =
+        `client-status-select ${getStatusClass(client.status)}`;
 
     select.setAttribute(
         "aria-label",
@@ -639,6 +681,9 @@ function createStatusSelect(client) {
         event.stopPropagation();
 
         client.status = select.value;
+
+        select.className =
+            `client-status-select ${getStatusClass(client.status)}`;
 
         saveClientsState();
 
@@ -840,6 +885,8 @@ function createClientCard(client) {
         client.dealValue
     );
 
+    const statusBadge =
+        createStatusBadge(client);
 
     const actions = document.createElement("div");
 
@@ -1358,14 +1405,12 @@ function renderClientNotes(client) {
 
     client.notes
         .slice()
-        .reverse()
         .forEach((note) => {
             const noteItem =
                 document.createElement("li");
 
             noteItem.className =
                 "client-note-item";
-
 
             const noteText =
                 document.createElement("p");
@@ -1376,7 +1421,6 @@ function renderClientNotes(client) {
             noteText.textContent =
                 note.text;
 
-
             const noteDate =
                 document.createElement("time");
 
@@ -1386,7 +1430,6 @@ function renderClientNotes(client) {
             noteDate.textContent =
                 note.date ||
                 "Unknown date";
-
 
             noteItem.append(
                 noteText,
@@ -1429,6 +1472,9 @@ function fillClientDetails(client) {
 
     detailsClientStatus.textContent =
         client.status || "Lead";
+
+    detailsClientStatus.className =
+        `status-badge ${getStatusClass(client.status)}`;
 
     detailsClientDealValue.textContent =
         formatDealValue(client.dealValue);

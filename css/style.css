@@ -699,7 +699,7 @@ textarea {
     margin-bottom: 20px;
 }
 
-.quick-actions-buttons {
+.quick-actions-list {
     display: flex;
     flex-wrap: wrap;
 
@@ -821,14 +821,6 @@ textarea {
     transform: translateY(-3px);
 }
 
-.client-card-header {
-    display: flex;
-    align-items: center;
-
-    gap: 14px;
-
-    margin-bottom: 16px;
-}
 
 .client-avatar,
 .client-card img {
@@ -848,31 +840,17 @@ textarea {
     margin-bottom: 4px;
 }
 
-.client-card-company,
-.client-card-email,
-.client-card-phone {
+.client-company,
+.client-email {
     color: var(--muted-text-color);
 }
 
-.client-card-email {
+.client-email {
     margin-bottom: 8px;
 
     overflow-wrap: anywhere;
 }
 
-.client-card-phone {
-    margin-bottom: 16px;
-}
-
-.client-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 12px;
-
-    margin-top: 16px;
-}
 
 .client-deal-value {
     font-size: 18px;
@@ -882,6 +860,12 @@ textarea {
 .client-status-select {
     width: auto;
     min-width: 125px;
+
+    border: none;
+
+    font-weight: 700;
+
+    cursor: pointer;
 }
 
 
@@ -1392,10 +1376,6 @@ textarea:focus-visible {
         justify-self: end;
     }
 
-    .client-card-footer {
-        flex-wrap: wrap;
-    }
-
     .modal-content {
         padding: 24px 20px;
     }
@@ -1456,7 +1436,7 @@ textarea:focus-visible {
         margin-bottom: 6px;
     }
 
-    .quick-actions-buttons {
+    .quick-actions-list {
         flex-direction: column;
     }
 
@@ -1474,7 +1454,6 @@ textarea:focus-visible {
         width: 100%;
     }
 
-    .client-card-footer,
     .client-actions {
         flex-direction: column;
         align-items: stretch;
