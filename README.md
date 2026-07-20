@@ -1,0 +1,138 @@
+# 10X CRM
+
+## About
+
+10X CRM is a web application built with HTML, CSS, and Vanilla JavaScript.
+
+The application allows users to manage clients, track customer information, organize deals, and update their profile. Client data is initially loaded from the DummyJSON API and stored locally using Local Storage.
+
+---
+
+## Features
+
+### Authentication
+- User registration
+- User login
+- Session persistence using Local Storage
+- Protected pages for authenticated users
+- Logout functionality
+
+### Dashboard
+- Statistics cards
+- Recent activity section
+- Quick action buttons
+- Export data functionality
+
+### Client Management
+- Load initial client data from DummyJSON API
+- Store client data in Local Storage
+- Add new clients
+- Delete clients
+- Search clients by name, company, or email
+- Filter clients by status
+- Sort clients by name, deal value, and creation date
+- Update client status
+- View client details
+- Add client notes
+
+### Profile
+- Update profile information
+- Notification preferences
+- Theme selection
+
+### User Experience
+- Responsive design
+- Light/Dark theme
+- Toast notifications
+- Form validation
+
+---
+
+## Tech Stack
+
+- HTML5
+- CSS3
+- Vanilla JavaScript (ES6+)
+- Fetch API
+- Local Storage
+- DummyJSON API
+
+---
+
+## Project Structure
+
+```text
+exam/
+│
+├── css/
+│   └── style.css
+│
+├── js/
+│   ├── common.js
+│   ├── data.js
+│   ├── dashboard.js
+│   ├── clients.js
+│   ├── login.js
+│   ├── signup.js
+│   ├── profile.js
+│   └── guard.js
+│
+├── index.html
+├── signup.html
+├── dashboard.html
+├── clients.html
+├── profile.html
+│
+├── README.md
+└── AI_LOG.md
+└── GLOSSARY.md
+```
+
+---
+
+## How to Run
+
+1. Clone or download the repository.
+2. Open the project in Visual Studio Code.
+3. Start the project using the Live Server extension.
+4. Open the application in your browser.
+
+---
+
+## Live Demo
+
+GitHub Pages link will be added here.
+
+---
+
+## Test Account
+
+Please create a new account using the **Sign Up** page before logging in.
+
+---
+
+## Validation
+
+The project includes:
+
+- Required field validation
+- Email validation
+- Duplicate email prevention
+- Positive deal value validation
+- Password strength validation
+
+---
+
+## Accessibility
+
+- Semantic HTML
+- Form labels
+- ARIA attributes
+
+---
+
+## Credits
+
+Developed by **Nazi Pholadashvili**.
+
+AI-assisted development and code review provided with **ChatGPT (OpenAI)**.
