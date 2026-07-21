@@ -108,7 +108,11 @@ exam/
 
 ## Live Demo
 
-GitHub Pages link will be added here.
+https://10x-crm-nazi-pholadashvili.vercel.app
+
+Test account: test2@example.com / password: Test1234@@ 
+
+Made by Nazi Pholadashvili, independently, using ChatGPT (OpenAI).
 
 ---
 
