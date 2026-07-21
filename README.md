@@ -4,7 +4,7 @@
 
 10X CRM is a web application built with HTML, CSS, and Vanilla JavaScript.
 
-The application allows users to manage clients, track customer information, organize deals, and update their profile. Client data is initially loaded from the DummyJSON API and stored locally using Local Storage.
+The application allows users to manage clients, track customer information, organize deals, and update their profile. Client data is initially loaded from the DummyJSON API and then stored locally using Local Storage.
 
 ---
 
@@ -19,7 +19,7 @@ The application allows users to manage clients, track customer information, orga
 
 ### Dashboard
 - Statistics cards
-- Recent activity section
+- Recent clients section
 - Quick action buttons
 - Export data functionality
 
@@ -59,6 +59,12 @@ The application allows users to manage clients, track customer information, orga
 
 ---
 
+## Data Storage
+
+The application loads the initial client data from the DummyJSON API. After the first load, all client information is stored in Local Storage, allowing users to continue working with the data without requiring a backend database.
+
+---
+
 ## Project Structure
 
 ```text
@@ -84,8 +90,9 @@ exam/
 ├── profile.html
 │
 ├── README.md
-└── AI_LOG.md
-└── GLOSSARY.md
+└── ai-log.md
+└── glossary.md
+└── research-note.md
 ```
 
 ---
