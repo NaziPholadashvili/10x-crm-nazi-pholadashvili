@@ -41,10 +41,11 @@ The application allows users to manage clients, track customer information, orga
 - Reset CRM data
 
 ### User Experience
-### User Experience
 - Toast notifications
 - Light and dark theme toggle
 - Responsive design
+- Client reminders
+
 ---
 
 ## Tech Stack
