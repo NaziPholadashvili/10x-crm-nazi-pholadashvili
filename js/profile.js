@@ -130,10 +130,7 @@ function displayProfileToast(
 ) {
     if (typeof showToast === "function") {
         showToast(message, type);
-        return;
     }
-
-    window.alert(message);
 }
 
 

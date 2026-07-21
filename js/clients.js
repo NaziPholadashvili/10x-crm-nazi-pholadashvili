@@ -1597,13 +1597,13 @@ function handleClientReminder() {
     const clientName = client.name;
 
     showToast(
-        "Reminder set for 1 minute ✓",
+        "Reminder set ✓",
         "success"
     );
 
     window.setTimeout(() => {
         showToast(
-            `⏰ Follow up with ${clientName}`,
+            `⏰ Follow up ${clientName}`,
             "info"
         );
     }, 60000);
@@ -1937,3 +1937,4 @@ document.addEventListener(
     "DOMContentLoaded",
     initializeClientsPage
 );
+
