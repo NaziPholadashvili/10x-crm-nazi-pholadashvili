@@ -53,8 +53,8 @@ English: Error handling is the process of detecting and managing errors so a pro
 
 ქართული: Error Handling არის შეცდომების აღმოჩენისა და დამუშავების პროცესი, რათა პროგრამამ სწორად გააგრძელოს მუშაობა.
 
-10. Parsing
+10. CRUD
 
-English: Parsing is the process of analyzing code or data and converting it into a format, that a computer can understand and process.
+English: CRUD stands for Create, Read, Update, and Delete, which are the main operations used to manage client data in the application.
 
-ქართული: Parsing არის კოდის ან მონაცემების ანალიზისა და დამუშავების პროცესი, რომლის შედეგადაც ისინი კომპიუტერისთვის გასაგებ ფორმატში გადაიქცევა.
+ქართული: CRUD ნიშნავს მონაცემებზე ოთხ ძირითად მოქმედებას: შექმნას, წაკითხვას, განახლებას და წაშლას. 10X CRM-ში ეს გამოიყენება კლიენტის დამატების, კლიენტების სიის ჩვენების, სტატუსისა და ჩანაწერების განახლების და კლიენტის წაშლის დროს.

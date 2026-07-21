@@ -37,15 +37,14 @@ The application allows users to manage clients, track customer information, orga
 
 ### Profile
 - Update profile information
-- Notification preferences
-- Theme selection
+- Change password
+- Reset CRM data
 
 ### User Experience
-- Responsive design
-- Light/Dark theme
+### User Experience
 - Toast notifications
-- Form validation
-
+- Light and dark theme toggle
+- Responsive design
 ---
 
 ## Tech Stack
@@ -90,8 +89,8 @@ exam/
 ├── profile.html
 │
 ├── README.md
-└── ai-log.md
-└── glossary.md
+├── ai-log.md
+├── glossary.md
 └── research-note.md
 ```
 

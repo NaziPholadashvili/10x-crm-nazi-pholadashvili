@@ -160,12 +160,8 @@ let isSubmittingClient = false;
 ========================================================= */
 
 function saveClientsState() {
-    localStorage.setItem(
-        CLIENTS_STORAGE_KEY,
-        JSON.stringify(clientsState)
-    );
+    saveClients(clientsState);
 }
-
 
 function findClientById(clientId) {
     return clientsState.find((client) => {
@@ -1014,59 +1010,6 @@ function showClientsLoadError() {
     );
 
     clientsList.append(errorContainer);
-}
-
-
-/* =========================================================
-   API CLIENT TRANSFORMATION
-========================================================= */
-
-function createClientFromApiUser(user) {
-    const firstName = String(
-        user.firstName || ""
-    ).trim();
-
-    const lastName = String(
-        user.lastName || ""
-    ).trim();
-
-    const fullName =
-        `${firstName} ${lastName}`.trim();
-
-    const randomDealValue =
-        Math.floor(Math.random() * 9501) + 500;
-
-    return {
-        id: user.id,
-
-        name:
-            fullName || "Unknown Client",
-
-        email: String(user.email || "")
-            .trim()
-            .toLowerCase(),
-
-        phone: String(
-            user.phone || ""
-        ).trim(),
-
-        company: String(
-            user.company?.name || ""
-        ).trim(),
-
-        image: String(
-            user.image || ""
-        ).trim(),
-
-        status: "Lead",
-
-        dealValue: randomDealValue,
-
-        notes: [],
-
-        createdAt:
-            new Date().toISOString()
-    };
 }
 
 
