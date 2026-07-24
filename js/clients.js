@@ -163,6 +163,7 @@ function saveClientsState() {
     saveClients(clientsState);
 }
 
+
 function findClientById(clientId) {
     return clientsState.find((client) => {
         return String(client.id) === String(clientId);
@@ -267,6 +268,31 @@ function clientEmailExists(email) {
             String(client.email || "")
                 .trim()
                 .toLowerCase() === email
+        );
+    });
+}
+
+
+/* =========================================================
+   CLIENT NAME DUPLICATE CHECK
+========================================================= */
+
+function normalizeClientName(name) {
+    return String(name || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+}
+
+
+function clientNameExists(name) {
+    const normalizedName =
+        normalizeClientName(name);
+
+    return clientsState.some((client) => {
+        return (
+            normalizeClientName(client.name) ===
+            normalizedName
         );
     });
 }
@@ -388,6 +414,14 @@ function validateClientForm() {
             clientNameInput,
             clientNameError,
             "Name must be at least 3 characters"
+        );
+
+        isFormValid = false;
+    } else if (clientNameExists(name)) {
+        setFieldError(
+            clientNameInput,
+            clientNameError,
+            "A client with this name already exists"
         );
 
         isFormValid = false;
@@ -602,6 +636,7 @@ function getVisibleClients() {
     return visibleClients;
 }
 
+
 /* =========================================================
    STATUS BADGE
 ========================================================= */
@@ -623,6 +658,7 @@ function getStatusClass(status) {
     }
 }
 
+
 function createStatusBadge(client) {
     const badge = document.createElement("span");
 
@@ -633,6 +669,7 @@ function createStatusBadge(client) {
 
     return badge;
 }
+
 
 /* =========================================================
    STATUS SELECT
@@ -881,9 +918,6 @@ function createClientCard(client) {
         client.dealValue
     );
 
-    const statusBadge =
-        createStatusBadge(client);
-
     const actions = document.createElement("div");
 
     actions.className = "client-actions";
@@ -948,6 +982,8 @@ function renderClients() {
 
     clientsList.append(clientsFragment);
 }
+
+
 /* =========================================================
    LOADING STATE
 ========================================================= */
@@ -1937,4 +1973,3 @@ document.addEventListener(
     "DOMContentLoaded",
     initializeClientsPage
 );
-
