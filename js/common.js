@@ -158,10 +158,28 @@ function togglePasswordVisibility(event) {
 }
 
 
+/* EMAIL INPUT */
+
+function allowOnlyLatinEmailCharacters() {
+    const emailInputs =
+        document.querySelectorAll('input[type="email"]');
+
+    emailInputs.forEach((input) => {
+        input.addEventListener("input", () => {
+            input.value = input.value.replace(
+                /[^a-zA-Z0-9@._+-]/g,
+                ""
+            );
+        });
+    });
+}
+
+
 /* PAGE INITIALIZATION */
 
 function initializeCommon() {
     applySavedTheme();
+    allowOnlyLatinEmailCharacters();
 
     const themeToggleButton =
         document.querySelector("#theme-toggle");
