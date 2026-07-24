@@ -114,7 +114,7 @@ https://10x-crm-nazi-pholadashvili.vercel.app
 
 ## Test Account
 
-Test account: test@example.com / password: 
+Test account: test@example.com / password: Test1234@@
  
 
 ---
