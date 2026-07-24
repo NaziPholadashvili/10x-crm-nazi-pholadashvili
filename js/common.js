@@ -50,7 +50,10 @@ function toggleTheme() {
         ? "light"
         : "dark";
 
-    localStorage.setItem(THEME_KEY, selectedTheme);
+    localStorage.setItem(
+        THEME_KEY,
+        selectedTheme
+    );
 
     updateThemeButton(selectedTheme);
 }
@@ -86,7 +89,10 @@ function showToast(message, type = "success") {
         "show"
     );
 
-    toast.classList.add(toastType, "show");
+    toast.classList.add(
+        toastType,
+        "show"
+    );
 
     toastTimer = setTimeout(() => {
         toast.classList.remove(
@@ -112,7 +118,8 @@ function logout() {
 
 function togglePasswordVisibility(event) {
     const toggleButton = event.currentTarget;
-    const targetInputId = toggleButton.dataset.target;
+    const targetInputId =
+        toggleButton.dataset.target;
 
     if (!targetInputId) {
         return;
@@ -162,7 +169,9 @@ function togglePasswordVisibility(event) {
 
 function allowOnlyLatinEmailCharacters() {
     const emailInputs =
-        document.querySelectorAll('input[type="email"]');
+        document.querySelectorAll(
+            'input[type="email"]'
+        );
 
     emailInputs.forEach((input) => {
         input.addEventListener("input", () => {
@@ -175,11 +184,78 @@ function allowOnlyLatinEmailCharacters() {
 }
 
 
+/* PHONE INPUT */
+
+function allowOnlyPhoneNumbers() {
+    const phoneInputs =
+        document.querySelectorAll(
+            'input[type="tel"]'
+        );
+
+    phoneInputs.forEach((input) => {
+        input.addEventListener("input", () => {
+            input.value =
+                input.value.replace(/\D/g, "");
+        });
+    });
+}
+
+
+/* CLIENT NAME INPUT */
+
+function allowOnlyLatinClientName() {
+    const clientNameInput =
+        document.querySelector("#client-name");
+
+    if (!clientNameInput) {
+        return;
+    }
+
+    clientNameInput.addEventListener(
+        "input",
+        () => {
+            clientNameInput.value =
+                clientNameInput.value.replace(
+                    /[^a-zA-Z\s'-]/g,
+                    ""
+                );
+        }
+    );
+}
+
+
+/* CLIENT COMPANY INPUT */
+
+function allowOnlyLatinClientCompany() {
+    const clientCompanyInput =
+        document.querySelector("#client-company");
+
+    if (!clientCompanyInput) {
+        return;
+    }
+
+    clientCompanyInput.addEventListener(
+        "input",
+        () => {
+            clientCompanyInput.value =
+                clientCompanyInput.value.replace(
+                    /[^a-zA-Z0-9\s&.,'-]/g,
+                    ""
+                );
+        }
+    );
+}
+
+
 /* PAGE INITIALIZATION */
 
 function initializeCommon() {
     applySavedTheme();
+
     allowOnlyLatinEmailCharacters();
+    allowOnlyPhoneNumbers();
+    allowOnlyLatinClientName();
+    allowOnlyLatinClientCompany();
 
     const themeToggleButton =
         document.querySelector("#theme-toggle");
@@ -188,7 +264,9 @@ function initializeCommon() {
         document.querySelector("#logout-button");
 
     const passwordToggleButtons =
-        document.querySelectorAll(".password-toggle");
+        document.querySelectorAll(
+            ".password-toggle"
+        );
 
     if (themeToggleButton) {
         themeToggleButton.addEventListener(
